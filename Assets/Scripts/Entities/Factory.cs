@@ -8,6 +8,8 @@ public sealed class Factory : BaseEntity
     FactoryDataScriptable FactoryData = null;
 
     GameObject[] UnitPrefabs = null;
+    public GameObject[] Prefabs => UnitPrefabs;
+    
     GameObject[] FactoryPrefabs = null;
     int RequestedEntityBuildIndex = -1;
     Image BuildGaugeImage;
