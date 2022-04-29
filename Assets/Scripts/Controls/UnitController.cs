@@ -8,6 +8,10 @@ public class UnitController : MonoBehaviour
 {
     [SerializeField]
     protected ETeam Team;
+
+	[SerializeField]
+	private Army army = new Army();
+
     public ETeam GetTeam() { return Team; }
 
     [SerializeField]
@@ -36,12 +40,9 @@ public class UnitController : MonoBehaviour
         }
     }
 
-    protected Transform TeamRoot = null;
-    public Transform GetTeamRoot() { return TeamRoot; }
+    public Transform GetTeamRoot() { return army.transform; }
 
-    protected List<Unit> UnitList = new List<Unit>();
     protected List<Unit> SelectedUnitList = new List<Unit>();
-    protected List<Factory> FactoryList = new List<Factory>();
     protected Factory SelectedFactory = null;
 
     // events
@@ -191,31 +192,28 @@ public class UnitController : MonoBehaviour
     #region MonoBehaviour methods
     virtual protected void Awake()
     {
-        string rootName = Team.ToString() + "Team";
-        TeamRoot = GameObject.Find(rootName)?.transform;
-        if (TeamRoot)
-            Debug.LogFormat("TeamRoot {0} found !", rootName);
+		Army[] armies = FindObjectsOfType<Army>();
+
+		for (int i = 0; i < armies.Length; i++)
+			if (armies[i].Team == Team)
+			{
+				army = armies[i];
+				break;
+			}
+
+		army._owner = this;
     }
+
     virtual protected void Start ()
     {
-        CapturedTargets = 0;
         TotalBuildPoints = StartingBuildPoints;
 
-        // get all team factory already in scene
-        Factory [] allFactories = FindObjectsOfType<Factory>();
-        foreach(Factory factory in allFactories)
-        {
-            if (factory.GetTeam() == GetTeam())
-            {
-                AddFactory(factory);
-            }
-        }
+        
 
-        Debug.Log("found " + FactoryList.Count + " factory for team " + GetTeam().ToString());
+
     }
     virtual protected void Update ()
     {
-		
 	}
     #endregion
 }
