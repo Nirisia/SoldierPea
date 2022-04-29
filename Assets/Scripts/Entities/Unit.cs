@@ -7,8 +7,8 @@ public class Unit : BaseEntity
 
     Transform BulletSlot;
     float LastActionDate = 0f;
-    BaseEntity EntityTarget = null;
-    TargetBuilding CaptureTarget = null;
+    public BaseEntity EntityTarget = null;
+    public TargetBuilding CaptureTarget = null;
     NavMeshAgent NavMeshAgent;
     public UnitDataScriptable GetUnitData { get { return UnitData; } }
     public int Cost { get { return UnitData.Cost; } }
@@ -60,13 +60,13 @@ public class Unit : BaseEntity
     override protected void Update()
     {
         // Attack / repair task debug test $$$ to be removed for AI implementation
-        if (EntityTarget != null)
+       /* if (EntityTarget != null)
         {
             if (EntityTarget.GetTeam() != GetTeam())
                 ComputeAttack();
             else
                 ComputeRepairing();
-        }
+        }*/
 	}
     #endregion
 
