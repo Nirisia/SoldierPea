@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Squad : MonoBehaviour
 {
+    
+    public List<Unit> Group = new List<Unit>();
+    
     // Start is called before the first frame update
     void Start()
     {
