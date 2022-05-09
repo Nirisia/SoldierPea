@@ -11,8 +11,16 @@ public class UnitBT : Tree
 
         Node root = new Selector(new List<Node> 
         {
-            new CaptureTask(owner),
-            new AttackTask(owner),
+            new Sequence(new List<Node>
+            {
+                new SeeEnemyTask(owner),
+                new AttackTask(owner)
+            }),
+            new Sequence(new List<Node>
+            {
+                new SeePointTask(owner),
+                new CaptureTask(owner)
+            }),
             new Sequence(),
         });
         return root;

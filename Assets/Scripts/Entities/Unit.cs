@@ -59,14 +59,7 @@ public class Unit : BaseEntity
     }
     override protected void Update()
     {
-        // Attack / repair task debug test $$$ to be removed for AI implementation
-       /* if (EntityTarget != null)
-        {
-            if (EntityTarget.GetTeam() != GetTeam())
-                ComputeAttack();
-            else
-                ComputeRepairing();
-        }*/
+
 	}
     #endregion
 
@@ -147,6 +140,37 @@ public class Unit : BaseEntity
         if (entity.GetTeam() == GetTeam())
             StartRepairing(entity);
     }
+
+    public bool CanSeeEnemy()
+    {
+        Collider[] targetColliders = Physics.OverlapSphere(transform.position, GetUnitData.AttackDistanceMax);
+        foreach (var targetCollider in targetColliders)
+        {
+            BaseEntity enemy = targetCollider.GetComponent<BaseEntity>();
+            if (enemy != null && enemy.GetTeam() != this.GetTeam())
+            {
+                EntityTarget = enemy;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool CanSeePoint()
+    {
+        Collider[] targetColliders = Physics.OverlapSphere(transform.position, GetUnitData.CaptureDistanceMax);
+        foreach (var targetCollider in targetColliders)
+        {
+            TargetBuilding point = targetCollider.GetComponent<TargetBuilding>();
+            if (point != null)
+            {
+               CaptureTarget = point;
+                return true;
+            }
+        }
+        return false;
+    }
+
     public bool CanAttack(BaseEntity target)
     {
         if (target == null)
