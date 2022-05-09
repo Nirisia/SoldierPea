@@ -19,9 +19,9 @@ public class Army : MonoBehaviour
 	private int _capturedTargets = 0;
 
 	/* lists */
-	private		List<Unit>		_unitList	 = new List<Unit>();
-	private		List<Squad>		_squadList	 = new List<Squad>();
-	protected	List<Factory>	_factoryList = new List<Factory>();
+	private	List<Unit>		_unitList	 = new List<Unit>();
+	private	List<Squad>		_squadList	 = new List<Squad>();
+	private	List<Factory>	_factoryList = new List<Factory>();
 
 	/*====== Serialized Field Getter/Setter ======*/
 
@@ -31,8 +31,11 @@ public class Army : MonoBehaviour
 
 	public int CapturedTargets => _capturedTargets;
 
+	public List<Unit> UnitList		=> _unitList;
+	public List<Factory> FactoryList => _factoryList;
+
 	/* Add/Remove Methods */
-	void AddFactory(Factory factory)
+	public void AddFactory(Factory factory)
 	{
 		if (factory == null)
 		{
@@ -42,13 +45,20 @@ public class Army : MonoBehaviour
 
 		factory.OnDeadEvent += () =>
 		{
-			TotalBuildPoints += factory.Cost;
-			if (factory.IsSelected)
-				SelectedFactory = null;
-			FactoryList.Remove(factory);
+			_owner.TotalBuildPoints += factory.Cost;
+			_factoryList.Remove(factory);
 		};
 
 		_factoryList.Add(factory);
+	}
+
+	virtual public void AddUnit(Unit unit)
+	{
+		unit.OnDeadEvent += () =>
+		{
+			_unitList.Remove(unit);
+		};
+		_unitList.Add(unit);
 	}
 
 	/*====== Init Methods ======*/

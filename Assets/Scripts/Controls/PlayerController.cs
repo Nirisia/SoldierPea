@@ -95,12 +95,12 @@ public sealed class PlayerController : UnitController
 	}
 	void SetCameraFocusOnMainFactory()
 	{
-		if (FactoryList.Count > 0)
-			TopCameraRef.FocusEntity(FactoryList[0]);
+		if (_army.FactoryList.Count > 0)
+			TopCameraRef.FocusEntity(_army.FactoryList[0]);
 	}
 	void CancelCurrentBuild()
 	{
-		SelectedFactory?.CancelCurrentBuild();
+		_selectedFactory?.CancelCurrentBuild();
 		PlayerMenuController.HideAllFactoryBuildQueue();
 	}
 
@@ -170,15 +170,15 @@ public sealed class PlayerController : UnitController
 		// Destroy selected unit command
 		OnDestroyEntityPressed += () =>
 		{
-			Unit[] unitsToBeDestroyed = SelectedUnitList.ToArray();
+			Unit[] unitsToBeDestroyed = _selectedUnits.ToArray();
 			foreach (Unit unit in unitsToBeDestroyed)
 			{
 				(unit as IDamageable).Destroy();
 			}
 
-			if (SelectedFactory)
+			if (_selectedFactory)
 			{
-				Factory factoryRef = SelectedFactory;
+				Factory factoryRef = _selectedFactory;
 				UnselectCurrentFactory();
 				factoryRef.Destroy();
 			}
@@ -334,7 +334,7 @@ public sealed class PlayerController : UnitController
 			Factory factory = raycastInfo.transform.GetComponent<Factory>();
 			if (factory != null)
 			{
-				if (factory.GetTeam() == Team && SelectedFactory != factory)
+				if (factory.GetTeam() == Team && _selectedFactory != factory)
 				{
 					UnselectCurrentFactory();
 					SelectFactory(factory);
@@ -434,7 +434,7 @@ public sealed class PlayerController : UnitController
 				else if (selectedEntity is Factory)
 				{
 					// Select only one factory at a time
-					if (SelectedFactory == null)
+					if (_selectedFactory == null)
 						SelectFactory(selectedEntity as Factory);
 				}
 			}
@@ -449,7 +449,7 @@ public sealed class PlayerController : UnitController
 	#region Factory / build methods
 	public void UpdateFactoryBuildQueueUI(int entityIndex)
 	{
-		PlayerMenuController.UpdateFactoryBuildQueueUI(entityIndex, SelectedFactory);
+		PlayerMenuController.UpdateFactoryBuildQueueUI(entityIndex, _selectedFactory);
 	}
 	protected override void SelectFactory(Factory factory)
 	{
@@ -458,15 +458,15 @@ public sealed class PlayerController : UnitController
 
 		base.SelectFactory(factory);
 
-		PlayerMenuController.UpdateFactoryMenu(SelectedFactory, RequestUnitBuild, EnterFactoryBuildMode);
+		PlayerMenuController.UpdateFactoryMenu(_selectedFactory, RequestUnitBuild, EnterFactoryBuildMode);
 	}
 	protected override void UnselectCurrentFactory()
 	{
 		//Debug.Log("UnselectCurrentFactory");
 
-		if (SelectedFactory)
+		if (_selectedFactory)
 		{
-			PlayerMenuController.UnregisterBuildButtons(SelectedFactory.AvailableUnitsCount, SelectedFactory.AvailableFactoriesCount);
+			PlayerMenuController.UnregisterBuildButtons(_selectedFactory.AvailableUnitsCount, _selectedFactory.AvailableFactoriesCount);
 		}
 
 		PlayerMenuController.HideFactoryMenu();
@@ -475,7 +475,7 @@ public sealed class PlayerController : UnitController
 	}
 	void EnterFactoryBuildMode(int factoryId)
 	{
-		if (SelectedFactory.GetFactoryCost(factoryId) > TotalBuildPoints)
+		if (_selectedFactory.GetFactoryCost(factoryId) > TotalBuildPoints)
 			return;
 
 		//Debug.Log("EnterFactoryBuildMode");
@@ -487,7 +487,7 @@ public sealed class PlayerController : UnitController
 		// Create factory preview
 
 		// Load factory prefab for preview
-		GameObject factoryPrefab = SelectedFactory.GetFactoryPrefab(factoryId);
+		GameObject factoryPrefab = _selectedFactory.GetFactoryPrefab(factoryId);
 		if (factoryPrefab == null)
 		{
 			Debug.LogWarning("Invalid factory prefab for factoryId " + factoryId);
@@ -536,7 +536,7 @@ public sealed class PlayerController : UnitController
 	#region Entity targetting (attack / capture) and movement methods
 	void ComputeUnitsAction()
 	{
-		if (SelectedUnitList.Count == 0)
+		if (_selectedUnits.Count == 0)
 			return;
 
 		int damageableMask	= (1 << LayerMask.NameToLayer("Unit")) | (1 << LayerMask.NameToLayer("Factory"));
@@ -554,13 +554,13 @@ public sealed class PlayerController : UnitController
 				if (other.GetTeam() != GetTeam())
 				{
 					// Direct call to attacking task $$$ to be improved by AI behaviour
-					foreach (Unit unit in SelectedUnitList)
+					foreach (Unit unit in _selectedUnits)
 						unit.SetAttackTarget(other);
 				}
 				else if (other.NeedsRepairing())
 				{
 					// Direct call to reparing task $$$ to be improved by AI behaviour
-					foreach (Unit unit in SelectedUnitList)
+					foreach (Unit unit in _selectedUnits)
 						unit.SetRepairTarget(other);
 				}
 			}
@@ -572,7 +572,7 @@ public sealed class PlayerController : UnitController
 			if (target != null && target.GetTeam() != GetTeam())
 			{
 				// Direct call to capturing task $$$ to be improved by AI behaviour
-				foreach (Unit unit in SelectedUnitList)
+				foreach (Unit unit in _selectedUnits)
 					unit.SetCaptureTarget(target);
 			}
 		}
@@ -584,7 +584,7 @@ public sealed class PlayerController : UnitController
 			SetTargetCursorPosition(newPos);
 
 			// Direct call to moving task $$$ to be improved by AI behaviour
-			foreach (Unit unit in SelectedUnitList)
+			foreach (Unit unit in _selectedUnits)
 				unit.SetTargetPos(newPos);
 		}
 	}
