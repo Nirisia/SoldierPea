@@ -19,7 +19,6 @@ public class UnitController : MonoBehaviour
 	/*=============== Members ===============*/
 
 	protected Army					_army			 = new Army();
-	protected SelectableList<Unit>	_selectedUnits	 = new SelectableList<Unit>();
 	protected Factory				_selectedFactory = null;
 
 	/*=============== END Members ===============*/
@@ -70,65 +69,11 @@ public class UnitController : MonoBehaviour
 	/*=============== END Events ===============*/
 	#endregion
 
-	#region Unit Selection methods
-	/*=============== Unit Selection Methods ===============*/
-
-	protected void UnselectAllUnits()
-    {
-        _selectedUnits.Clear();
-    }
-
-    protected void SelectAllUnits()
-    {
-        _selectedUnits.Clear();
-        _selectedUnits.AddRange(_army.UnitList);
-    }
-
-    protected void SelectAllUnitsByTypeId(int typeId)
-    {
-        UnselectCurrentFactory();
-        UnselectAllUnits();
-        _selectedUnits = _army.UnitList.FindAll(delegate (Unit unit)
-            {
-                return unit.GetTypeId == typeId;
-            }
-        );
-    }
-
-    protected void SelectUnitList(List<Unit> units)
-    {
-        _selectedUnits.AddRange(units);
-    }
-
-    protected void SelectUnitList(Unit [] units)
-    {
-        _selectedUnits.AddRange(units);
-    }
-
-    protected void SelectUnit(Unit unit)
-    {
-        _selectedUnits.Add(unit);
-    }
-
-    protected void UnselectUnit(Unit unit)
-    {
-        _selectedUnits.Remove(unit);
-    }
-
-	/*=============== END Selection Methods ===============*/
-	#endregion
-
 	#region Add Unit/Factory Methods
 	/*=============== Add Unit/Factory Methods ===============*/
 
 	virtual public void AddUnit(Unit unit)
     {
-        unit.OnDeadEvent += () =>
-        {
-            TotalBuildPoints += unit.Cost;
-            if (unit.IsSelected)
-                _selectedUnits.Remove(unit);
-        };
         _army.AddUnit(unit);
     }
 
@@ -181,7 +126,6 @@ public class UnitController : MonoBehaviour
 
         _selectedFactory = factory;
 		_selectedFactory.SetSelected(true);
-        UnselectAllUnits();
     }
 
     virtual protected void UnselectCurrentFactory()
@@ -248,10 +192,6 @@ public class UnitController : MonoBehaviour
     virtual protected void Start ()
     {
         TotalBuildPoints = StartingBuildPoints;
-
-        
-
-
     }
     virtual protected void Update ()
     {
