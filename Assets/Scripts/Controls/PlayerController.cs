@@ -52,7 +52,6 @@ public sealed class PlayerController : UnitController
 	GameObject		TargetCursor			= null;
 
 	private SelectableList<Unit>	_selectedUnits		= new SelectableList<Unit>();
-	private Factory					_selectedFactory	= null;
 
 	/* Factory build */
 	InputMode	CurrentInputMode		= InputMode.Orders;
