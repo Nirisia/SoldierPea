@@ -7,17 +7,16 @@ public sealed class Factory : BaseEntity
     [SerializeField]
     FactoryDataScriptable FactoryData = null;
 
-    GameObject[] UnitPrefabs = null;
-    public GameObject[] Prefabs => UnitPrefabs;
-    
-    GameObject[] FactoryPrefabs = null;
-    int RequestedEntityBuildIndex = -1;
-    Image BuildGaugeImage;
-    float CurrentBuildDuration = 0f;
-    float EndBuildDate = 0f;
-    int SpawnCount = 0;
+    GameObject[]	UnitPrefabs		= null;
+    GameObject[]	FactoryPrefabs	= null;
+    int				RequestedEntityBuildIndex = -1;
+    Image			BuildGaugeImage;
+    float			CurrentBuildDuration	= 0f;
+    float			EndBuildDate			= 0f;
+    int				SpawnCount				= 0;
+
     /* !! max available unit count in menu is set to 9, available factories count to 3 !! */
-    const int MaxAvailableUnits = 9;
+    const int MaxAvailableUnits		= 9;
     const int MaxAvailableFactories = 3;
 
     UnitController Controller = null;
@@ -190,11 +189,7 @@ public sealed class Factory : BaseEntity
     }
     public bool RequestUnitBuild(int unitMenuIndex)
     {
-        
         int cost = GetUnitCost(unitMenuIndex);
-        if(!Controller)
-            Controller = GameServices.GetControllerByTeam(Team);
-        
         if (Controller.TotalBuildPoints < cost || BuildingQueue.Count >= MaxBuildingQueueSize)
             return false;
 
@@ -269,10 +264,10 @@ public sealed class Factory : BaseEntity
         if (Physics.Raycast(ray, out raycastInfo, 10f, 1 << layer))
             spawnPos = raycastInfo.point;
 
-        Transform teamRoot = GameServices.GetControllerByTeam(GetTeam())?.GetTeamRoot();
+        Transform teamRoot	= GameServices.GetControllerByTeam(GetTeam())?.GetTeamRoot();
         GameObject unitInst = Instantiate(unitPrefab, spawnPos, Quaternion.identity, teamRoot);
-        unitInst.name = unitInst.name.Replace("(Clone)", "_" + SpawnCount.ToString());
-        Unit newUnit = unitInst.GetComponent<Unit>();
+        unitInst.name		= unitInst.name.Replace("(Clone)", "_" + SpawnCount.ToString());
+        Unit newUnit		= unitInst.GetComponent<Unit>();
         newUnit.Init(GetTeam());
 
         SpawnCount++;

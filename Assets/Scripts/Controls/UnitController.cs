@@ -6,9 +6,28 @@ using UnityEngine;
 // max points can be increased by capturing TargetBuilding entities
 public class UnitController : MonoBehaviour
 {
-    [SerializeField]
-    protected ETeam Team;
-    public ETeam GetTeam() { return Team; }
+	#region Serialized Fields
+	/*=============== Serialized Fields ===============*/
+
+	[SerializeField]
+    protected ETeam Team = ETeam.Neutral;
+
+	/*=============== END Serialized Fields ===============*/
+	#endregion
+
+	#region Members
+	/*=============== Members ===============*/
+
+	protected Army					_army			 = new Army();
+	protected Factory				_selectedFactory = null;
+
+	/*=============== END Members ===============*/
+	#endregion
+
+	#region Accessors
+	/*=============== Accessors ===============*/
+
+	public ETeam GetTeam() { return Team; }
 
     [SerializeField]
     protected int StartingBuildPoints = 15;
@@ -36,95 +55,29 @@ public class UnitController : MonoBehaviour
         }
     }
 
-    protected Transform TeamRoot = null;
-    public Transform GetTeamRoot() { return TeamRoot; }
+    public Transform GetTeamRoot() { return _army.transform; }
 
-    protected List<Unit> UnitList = new List<Unit>();
-    protected List<Unit> SelectedUnitList = new List<Unit>();
-    protected List<Factory> FactoryList = new List<Factory>();
-    protected Factory SelectedFactory = null;
+	/*=============== Accessors ===============*/
+	#endregion
 
-    // events
-    protected Action OnBuildPointsUpdated;
+	#region Events
+	/*=============== Events ===============*/
+
+	protected Action OnBuildPointsUpdated;
     protected Action OnCaptureTarget;
 
-    #region Unit methods
-    protected void UnselectAllUnits()
-    {
-        foreach (Unit unit in SelectedUnitList)
-            unit.SetSelected(false);
-        SelectedUnitList.Clear();
-    }
-    protected void SelectAllUnits()
-    {
-        foreach (Unit unit in UnitList)
-            unit.SetSelected(true);
+	/*=============== END Events ===============*/
+	#endregion
 
-        SelectedUnitList.Clear();
-        SelectedUnitList.AddRange(UnitList);
-    }
-    protected void SelectAllUnitsByTypeId(int typeId)
-    {
-        UnselectCurrentFactory();
-        UnselectAllUnits();
-        SelectedUnitList = UnitList.FindAll(delegate (Unit unit)
-            {
-                return unit.GetTypeId == typeId;
-            }
-        );
-        foreach (Unit unit in SelectedUnitList)
-        {
-            unit.SetSelected(true);
-        }
-    }
-    protected void SelectUnitList(List<Unit> units)
-    {
-        foreach (Unit unit in units)
-            unit.SetSelected(true);
-        SelectedUnitList.AddRange(units);
-    }
-    protected void SelectUnitList(Unit [] units)
-    {
-        foreach (Unit unit in units)
-            unit.SetSelected(true);
-        SelectedUnitList.AddRange(units);
-    }
-    protected void SelectUnit(Unit unit)
-    {
-        unit.SetSelected(true);
-        SelectedUnitList.Add(unit);
-    }
-    protected void UnselectUnit(Unit unit)
-    {
-        unit.SetSelected(false);
-        SelectedUnitList.Remove(unit);
-    }
-    virtual public void AddUnit(Unit unit)
-    {
-        unit.OnDeadEvent += () =>
-        {
-            TotalBuildPoints += unit.Cost;
-            if (unit.IsSelected)
-                SelectedUnitList.Remove(unit);
-            UnitList.Remove(unit);
-        };
-        UnitList.Add(unit);
-    }
-    public void CaptureTarget(int points)
-    {
-        Debug.Log("CaptureTarget");
-        TotalBuildPoints += points;
-        CapturedTargets++;
-    }
-    public void LoseTarget(int points)
-    {
-        TotalBuildPoints -= points;
-        CapturedTargets--;
-    }
-    #endregion
+	#region Add Unit/Factory Methods
+	/*=============== Add Unit/Factory Methods ===============*/
 
-    #region Factory methods
-    void AddFactory(Factory factory)
+	virtual public void AddUnit(Unit unit)
+    {
+        _army.AddUnit(unit);
+    }
+
+	void AddFactory(Factory factory)
     {
         if (factory == null)
         {
@@ -136,47 +89,80 @@ public class UnitController : MonoBehaviour
         {
             TotalBuildPoints += factory.Cost;
             if (factory.IsSelected)
-                SelectedFactory = null;
-            FactoryList.Remove(factory);
+				_selectedFactory = null;
         };
-        FactoryList.Add(factory);
+
+		_army.AddFactory(factory);
     }
-    virtual protected void SelectFactory(Factory factory)
+
+	/*=============== END Add Unit/Factory Methods ===============*/
+	#endregion
+
+	#region Target methods
+	/*=============== Target Methods ===============*/
+
+	public void CaptureTarget(int points)
+	{
+		Debug.Log("CaptureTarget");
+		TotalBuildPoints += points;
+		CapturedTargets++;
+	}
+	public void LoseTarget(int points)
+	{
+		TotalBuildPoints -= points;
+		CapturedTargets--;
+	}
+
+	/*=============== END Target Methods ===============*/
+	#endregion
+
+	#region Factory Selection methods
+	/*=============== Factory Selection Methods ===============*/
+
+	virtual protected void SelectFactory(Factory factory)
     {
         if (factory == null || factory.IsUnderConstruction)
             return;
 
-        SelectedFactory = factory;
-        SelectedFactory.SetSelected(true);
-        UnselectAllUnits();
+        _selectedFactory = factory;
+		_selectedFactory.SetSelected(true);
     }
+
     virtual protected void UnselectCurrentFactory()
     {
-        if (SelectedFactory != null)
-            SelectedFactory.SetSelected(false);
-        SelectedFactory = null;
+        if (_selectedFactory != null)
+			_selectedFactory.SetSelected(false);
+		_selectedFactory = null;
     }
-    protected bool RequestUnitBuild(int unitMenuIndex)
+
+	/*=============== Factory Selection Methods ===============*/
+	#endregion
+
+	#region Unit/Factory Build methods
+	/*=============== Unit/Factory Build Methods ===============*/
+
+	protected bool RequestUnitBuild(int unitMenuIndex)
     {
-        if (SelectedFactory == null)
+        if (_selectedFactory == null)
             return false;
 
-        return SelectedFactory.RequestUnitBuild(unitMenuIndex);
+        return _selectedFactory.RequestUnitBuild(unitMenuIndex);
     }
+
     protected bool RequestFactoryBuild(int factoryIndex, Vector3 buildPos)
     {
-        if (SelectedFactory == null)
+        if (_selectedFactory == null)
             return false;
 
-        int cost = SelectedFactory.GetFactoryCost(factoryIndex);
+        int cost = _selectedFactory.GetFactoryCost(factoryIndex);
         if (TotalBuildPoints < cost)
             return false;
 
         // Check if positon is valid
-        if (SelectedFactory.CanPositionFactory(factoryIndex, buildPos) == false)
+        if (_selectedFactory.CanPositionFactory(factoryIndex, buildPos) == false)
             return false;
 
-        Factory newFactory = SelectedFactory.StartBuildFactory(factoryIndex, buildPos);
+        Factory newFactory = _selectedFactory.StartBuildFactory(factoryIndex, buildPos);
         if (newFactory != null)
         {
             AddFactory(newFactory);
@@ -191,31 +177,24 @@ public class UnitController : MonoBehaviour
     #region MonoBehaviour methods
     virtual protected void Awake()
     {
-        string rootName = Team.ToString() + "Team";
-        TeamRoot = GameObject.Find(rootName)?.transform;
-        if (TeamRoot)
-            Debug.LogFormat("TeamRoot {0} found !", rootName);
+		Army[] armies = FindObjectsOfType<Army>();
+
+		for (int i = 0; i < armies.Length; i++)
+			if (armies[i].Team == Team)
+			{
+				_army = armies[i];
+				break;
+			}
+
+		_army._owner = this;
     }
+
     virtual protected void Start ()
     {
-        CapturedTargets = 0;
         TotalBuildPoints = StartingBuildPoints;
-
-        // get all team factory already in scene
-        Factory [] allFactories = FindObjectsOfType<Factory>();
-        foreach(Factory factory in allFactories)
-        {
-            if (factory.GetTeam() == GetTeam())
-            {
-                AddFactory(factory);
-            }
-        }
-
-        Debug.Log("found " + FactoryList.Count + " factory for team " + GetTeam().ToString());
     }
     virtual protected void Update ()
     {
-		
 	}
     #endregion
 }
