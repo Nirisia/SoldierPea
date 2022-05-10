@@ -10,7 +10,7 @@ public class UnitController : MonoBehaviour
 	/*=============== Serialized Fields ===============*/
 
 	[SerializeField]
-    protected ETeam Team = ETeam.Neutral;
+	protected ETeam Team = ETeam.Neutral;
 
 	/*=============== END Serialized Fields ===============*/
 	#endregion
@@ -18,8 +18,8 @@ public class UnitController : MonoBehaviour
 	#region Members
 	/*=============== Members ===============*/
 
-	protected Army					_army			 = new Army();
-	protected Factory				_selectedFactory = null;
+	protected Army	  _army				= new Army();
+	protected Factory _selectedFactory	= null;
 
 	/*=============== END Members ===============*/
 	#endregion
@@ -29,33 +29,33 @@ public class UnitController : MonoBehaviour
 
 	public ETeam GetTeam() { return Team; }
 
-    [SerializeField]
-    protected int StartingBuildPoints = 15;
+	[SerializeField]
+	protected int StartingBuildPoints = 15;
 
-    protected int _TotalBuildPoints = 0;
-    public int TotalBuildPoints
-    {
-        get { return _TotalBuildPoints; }
-        set
-        {
-            Debug.Log("TotalBuildPoints updated");
-            _TotalBuildPoints = value;
-            OnBuildPointsUpdated?.Invoke();
-        }
-    }
+	protected int _TotalBuildPoints = 0;
+	public int TotalBuildPoints
+	{
+		get { return _TotalBuildPoints; }
+		set
+		{
+			Debug.Log("TotalBuildPoints updated");
+			_TotalBuildPoints = value;
+			OnBuildPointsUpdated?.Invoke();
+		}
+	}
 
-    protected int _CapturedTargets = 0;
-    public int CapturedTargets
-    {
-        get { return _CapturedTargets; }
-        set
-        {
-            _CapturedTargets = value;
-            OnCaptureTarget?.Invoke();
-        }
-    }
+	protected int _CapturedTargets = 0;
+	public int CapturedTargets
+	{
+		get { return _CapturedTargets; }
+		set
+		{
+			_CapturedTargets = value;
+			OnCaptureTarget?.Invoke();
+		}
+	}
 
-    public Transform GetTeamRoot() { return _army.transform; }
+	public Transform GetTeamRoot() { return _army.transform; }
 
 	/*=============== Accessors ===============*/
 	#endregion
@@ -64,7 +64,7 @@ public class UnitController : MonoBehaviour
 	/*=============== Events ===============*/
 
 	protected Action OnBuildPointsUpdated;
-    protected Action OnCaptureTarget;
+	protected Action OnCaptureTarget;
 
 	/*=============== END Events ===============*/
 	#endregion
@@ -73,27 +73,27 @@ public class UnitController : MonoBehaviour
 	/*=============== Add Unit/Factory Methods ===============*/
 
 	virtual public void AddUnit(Unit unit)
-    {
-        _army.AddUnit(unit);
-    }
+	{
+		_army.AddUnit(unit);
+	}
 
 	void AddFactory(Factory factory)
-    {
-        if (factory == null)
-        {
-            Debug.LogWarning("Trying to add null factory");
-            return;
-        }
+	{
+		if (factory == null)
+		{
+			Debug.LogWarning("Trying to add null factory");
+			return;
+		}
 
-        factory.OnDeadEvent += () =>
-        {
-            TotalBuildPoints += factory.Cost;
-            if (factory.IsSelected)
+		factory.OnDeadEvent += () =>
+		{
+			TotalBuildPoints += factory.Cost;
+			if (factory.IsSelected)
 				_selectedFactory = null;
-        };
+		};
 
 		_army.AddFactory(factory);
-    }
+	}
 
 	/*=============== END Add Unit/Factory Methods ===============*/
 	#endregion
@@ -120,20 +120,20 @@ public class UnitController : MonoBehaviour
 	/*=============== Factory Selection Methods ===============*/
 
 	virtual protected void SelectFactory(Factory factory)
-    {
-        if (factory == null || factory.IsUnderConstruction)
-            return;
+	{
+		if (factory == null || factory.IsUnderConstruction)
+			return;
 
-        _selectedFactory = factory;
+		_selectedFactory = factory;
 		_selectedFactory.SetSelected(true);
-    }
+	}
 
-    virtual protected void UnselectCurrentFactory()
-    {
-        if (_selectedFactory != null)
+	virtual protected void UnselectCurrentFactory()
+	{
+		if (_selectedFactory != null)
 			_selectedFactory.SetSelected(false);
 		_selectedFactory = null;
-    }
+	}
 
 	/*=============== Factory Selection Methods ===============*/
 	#endregion
@@ -142,41 +142,41 @@ public class UnitController : MonoBehaviour
 	/*=============== Unit/Factory Build Methods ===============*/
 
 	protected bool RequestUnitBuild(int unitMenuIndex)
-    {
-        if (_selectedFactory == null)
-            return false;
+	{
+		if (_selectedFactory == null)
+			return false;
 
-        return _selectedFactory.RequestUnitBuild(unitMenuIndex);
-    }
+		return _selectedFactory.RequestUnitBuild(unitMenuIndex);
+	}
 
-    protected bool RequestFactoryBuild(int factoryIndex, Vector3 buildPos)
-    {
-        if (_selectedFactory == null)
-            return false;
+	protected bool RequestFactoryBuild(int factoryIndex, Vector3 buildPos)
+	{
+		if (_selectedFactory == null)
+			return false;
 
-        int cost = _selectedFactory.GetFactoryCost(factoryIndex);
-        if (TotalBuildPoints < cost)
-            return false;
+		int cost = _selectedFactory.GetFactoryCost(factoryIndex);
+		if (TotalBuildPoints < cost)
+			return false;
 
-        // Check if positon is valid
-        if (_selectedFactory.CanPositionFactory(factoryIndex, buildPos) == false)
-            return false;
+		// Check if positon is valid
+		if (_selectedFactory.CanPositionFactory(factoryIndex, buildPos) == false)
+			return false;
 
-        Factory newFactory = _selectedFactory.StartBuildFactory(factoryIndex, buildPos);
-        if (newFactory != null)
-        {
-            AddFactory(newFactory);
-            TotalBuildPoints -= cost;
+		Factory newFactory = _selectedFactory.StartBuildFactory(factoryIndex, buildPos);
+		if (newFactory != null)
+		{
+			AddFactory(newFactory);
+			TotalBuildPoints -= cost;
 
-            return true;
-        }
-        return false;
-    }
-    #endregion
+			return true;
+		}
+		return false;
+	}
+	#endregion
 
-    #region MonoBehaviour methods
-    virtual protected void Awake()
-    {
+	#region MonoBehaviour methods
+	virtual protected void Awake()
+	{
 		Army[] armies = FindObjectsOfType<Army>();
 
 		for (int i = 0; i < armies.Length; i++)
@@ -187,14 +187,14 @@ public class UnitController : MonoBehaviour
 			}
 
 		_army._owner = this;
-    }
-
-    virtual protected void Start ()
-    {
-        TotalBuildPoints = StartingBuildPoints;
-    }
-    virtual protected void Update ()
-    {
 	}
-    #endregion
+
+	virtual protected void Start ()
+	{
+		TotalBuildPoints = StartingBuildPoints;
+	}
+	virtual protected void Update ()
+	{
+	}
+	#endregion
 }

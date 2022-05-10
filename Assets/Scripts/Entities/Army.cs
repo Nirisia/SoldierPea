@@ -10,7 +10,10 @@ public class Army : MonoBehaviour
 	[SerializeField]
 	private ETeam _team;
 
-
+	/* squad boids settings */
+	[SerializeField]private float _squadAlignement	= 0.5f;
+	[SerializeField]private float _squadCohesion	= 0.5f;
+	[SerializeField]private float _squadSeparation	= 0.5f;
 
 	/*====== Members ======*/
 
@@ -78,16 +81,15 @@ public class Army : MonoBehaviour
 		Debug.Log("found " + _factoryList.Count + " factory for team " + _team.ToString());
 	}
 
-
 	// Start is called before the first frame update
 	void Start()
-    {
-        
-    }
+	{
+		
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	// Update is called once per frame
+	void Update()
+	{
+		
+	}
 }
