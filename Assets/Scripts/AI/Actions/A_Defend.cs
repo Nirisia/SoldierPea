@@ -6,9 +6,9 @@ using UnityEngine;
 
 public class A_Defend : AIAction
 {
-    public override void Execute(Data data)
+    public override bool Execute(Data data)
     {
-        
+        return true;
     }
 
     public override void UpdatePriority(Data data)

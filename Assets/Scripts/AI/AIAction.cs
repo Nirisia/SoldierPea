@@ -7,10 +7,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-public struct Data
-{
-    public Dictionary<string, object> package;
-}
+
 
 
 public abstract class AIAction : ScriptableObject
@@ -19,9 +16,10 @@ public abstract class AIAction : ScriptableObject
     protected float _priority = 0;
 
     public float Priority => _priority;
+    public EActionType AType = EActionType.None;
 
 
-    public abstract void Execute(Data data);
+    public abstract bool Execute(Data data);
     public abstract void UpdatePriority(Data data);
 
 }
