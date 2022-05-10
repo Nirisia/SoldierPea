@@ -15,9 +15,16 @@ public class CaptureTask : Node
     {
         if (unit.CanCapture(unit.CaptureTarget))
         {
-            unit.StartCapture(unit.CaptureTarget);
-            state = NodeState.SUCCESS;
-            return state;
+            if (unit.isCapturing == false)
+            {
+                unit.StartCapture(unit.CaptureTarget);
+                state = NodeState.SUCCESS;
+                return state;
+            }
+            else if (unit.CaptureTarget.GetTeam() == unit.GetTeam())
+            {
+                unit.isCapturing = false;
+            }
         }
         state = NodeState.FAILURE;
         return state;

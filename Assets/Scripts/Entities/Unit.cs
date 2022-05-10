@@ -13,6 +13,8 @@ public class Unit : BaseEntity
     public UnitDataScriptable GetUnitData { get { return UnitData; } }
     public int Cost { get { return UnitData.Cost; } }
     public int GetTypeId { get { return UnitData.TypeId; } }
+
+    public bool isCapturing = false;
     override public void Init(ETeam _team)
     {
         if (IsInitialized)
@@ -241,6 +243,7 @@ public class Unit : BaseEntity
 
         CaptureTarget = target;
         CaptureTarget.StartCapture(this);
+        isCapturing = true;
     }
     public void StopCapture()
     {
