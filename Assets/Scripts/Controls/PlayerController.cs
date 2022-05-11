@@ -149,8 +149,12 @@ public sealed class PlayerController : UnitController
 			Debug.LogWarning("EventSystem not assigned in PlayerController, searching in current scene...");
 			SceneEventSystem = FindObjectOfType<EventSystem>();
 		}
+
 		/* Set up the new Pointer Event */
 		MenuPointerEventData = new PointerEventData(SceneEventSystem);
+
+		Squad selectSquad = new Squad();
+		_army.AddSquad(selectSquad);
 	}
 
 	override protected void Start()
@@ -247,6 +251,7 @@ public sealed class PlayerController : UnitController
 	private void UnselectAllUnits()
 	{
 		_selectedUnits.Clear();
+		_army.SquadList[0]._group = _selectedUnits.List;
 	}
 
 	private void SelectAllUnits()
@@ -284,6 +289,7 @@ public sealed class PlayerController : UnitController
 	private void UnselectUnit(Unit unit)
 	{
 		_selectedUnits.Remove(unit);
+		_army.SquadList[0]._group = _selectedUnits.List;
 	}
 	/*=============== END Selection Methods ===============*/
 	#endregion
@@ -641,8 +647,8 @@ public sealed class PlayerController : UnitController
 			SetTargetCursorPosition(newPos);
 
 			// Direct call to moving task $$$ to be improved by AI behaviour
-			foreach (Unit unit in _selectedUnits)
-				unit.SetTargetPos(newPos);
+			_army.SquadList[0]._group = _selectedUnits.List;
+			_army.SquadList[0].Move(newPos);
 		}
 	}
 	#endregion

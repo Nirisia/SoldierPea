@@ -91,12 +91,25 @@ public class Army : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		
+		for (int i = 0; i < _squadList.Count; i++)
+		{
+			_squadList[i]._alignementWeight = _squadAlignement;
+			_squadList[i]._cohesionWeight	= _squadCohesion;
+			_squadList[i]._separationWeight = _squadSeparation;
+		}
 	}
 
 	// Update is called once per frame
 	void Update()
 	{
 		
+	}
+
+	private void FixedUpdate()
+	{
+		for (int i = 0; i < _squadList.Count; i++)
+		{
+			_squadList[i].UpdateMovement();
+		}
 	}
 }

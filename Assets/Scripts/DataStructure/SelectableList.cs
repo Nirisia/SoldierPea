@@ -7,7 +7,8 @@ public class SelectableList<T> : IEnumerable<T>  where T : ISelectable
 	private List<T> _data = new List<T>();
 
 	/*========= Accessors =========*/
-	public int Count => _data.Count;
+	public int		Count => _data.Count;
+	public List<T>	List => _data;
 
 	/*========= Add/Remove =========*/
 

@@ -61,7 +61,7 @@ public class A_Move : AIAction
         }
         
         if(CanMove && squad)
-            squad.desiredPosition = pos;
+            squad.Move(pos);
         else if(CanMove && unit)
             unit.SetTargetPos(pos);
         
