@@ -20,8 +20,6 @@ public class Squad : MonoBehaviour
 
 	public Vector3 desiredPosition = Vector3.zero;
 
-	private Vector3 desiredVelocity = Vector3.zero;
-
 	// Update is called once per frame
 	public void UpdateMovement()
 	{
@@ -37,10 +35,7 @@ public class Squad : MonoBehaviour
 	private void ComputeGroupMovement()
 	{
 		NavMeshPath path = new NavMeshPath();
-		if (_group[0].NavMeshAgent.CalculatePath(desiredPosition, path))
-		{
-			desiredVelocity = _group[0].NavMeshAgent.desiredVelocity;
-		}
+		_group[0].NavMeshAgent.SetDestination(desiredPosition);
 	}
 
 	private void ComputeUnitsMovement()
@@ -101,6 +96,8 @@ public class Squad : MonoBehaviour
 		Vector3 unitDesiredVelocity = Vector3.zero;
 
 		unitDesiredVelocity += _alignementWeight * GetAlignement(unit_, neighbours_);
+		unitDesiredVelocity += _cohesionWeight	 * GetCohesion(unit_, neighbours_);
+		unitDesiredVelocity += _separationWeight * GetSeparation(unit_, neighbours_);
 
 		return unitDesiredVelocity;
 	}
@@ -116,5 +113,34 @@ public class Squad : MonoBehaviour
 
 		alignement /= neighbours_.Count;
 		return alignement.normalized;
+	}
+
+	private Vector3 GetCohesion(Unit unit_, List<Unit> neighbours_)
+	{
+		Vector3 cohesion = Vector3.zero;
+
+		for (int i = 0; i < neighbours_.Count; i++)
+		{
+			cohesion += neighbours_[i].transform.position;
+		}
+
+		cohesion /= neighbours_.Count;
+		cohesion -= unit_.transform.position;
+
+		return cohesion.normalized;
+	}
+
+	private Vector3 GetSeparation(Unit unit_, List<Unit> neighbours_)
+	{
+		Vector3 separation = Vector3.zero;
+
+		for (int i = 0; i < neighbours_.Count; i++)
+		{
+			separation += neighbours_[i].transform.position - unit_.transform.position;
+		}
+
+		separation /= neighbours_.Count;
+
+		return -separation.normalized;
 	}
 }
