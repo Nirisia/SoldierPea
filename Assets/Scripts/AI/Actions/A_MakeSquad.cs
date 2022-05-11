@@ -27,7 +27,7 @@ public class A_MakeSquad : AIAction
                 case "Unit":
                     Unit temp = (Unit)pack.Value;
                     if(temp)
-                        squad.Group.Add(temp);
+                        squad._group.Add(temp);
 
                     break;
 
@@ -45,7 +45,7 @@ public class A_MakeSquad : AIAction
             Debug.Log("army not init");
             return false;
         }
-        else if (squad.Group.Count <= 0)
+        else if (squad._group.Count <= 0)
         {
             Debug.Log("No unit add squad ");
             return false;
