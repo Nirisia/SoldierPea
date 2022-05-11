@@ -332,6 +332,7 @@ public sealed class PlayerController : UnitController
 			UpdateSelection();
 		else if (Input.GetMouseButtonUp(0))//up
 			EndSelection();
+
 	}
 
 	/* method that listens for all actions inputs of user */
