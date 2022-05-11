@@ -1,20 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using BehaviorTree;
 
-public class AttackTask : Node
+public class RepairingTask : Node
 {
     Unit unit;
 
-    public AttackTask(Unit _unit)
+    public RepairingTask(Unit _unit)
     {
         unit = _unit;
     }
     public override NodeState Evaluate()
     {
-        if (unit.EntityTarget.GetTeam() != unit.GetTeam())
+        if (unit.EntityTarget.GetTeam() == unit.GetTeam())
         {
-            unit.ComputeAttack();
+            unit.ComputeRepairing();
             state = NodeState.SUCCESS;
             return state;
         }

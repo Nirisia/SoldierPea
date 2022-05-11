@@ -149,7 +149,7 @@ public class Unit : BaseEntity
         foreach (var targetCollider in targetColliders)
         {
             BaseEntity enemy = targetCollider.GetComponent<BaseEntity>();
-            if (enemy != null && enemy.GetTeam() != this.GetTeam())
+            if (enemy != null)
             {
                 EntityTarget = enemy;
                 return true;

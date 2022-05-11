@@ -14,7 +14,8 @@ public class UnitBT : Tree
             new Sequence(new List<Node>
             {
                 new SeeEnemyTask(owner),
-                new AttackTask(owner)
+                new AttackTask(owner),
+                new RepairingTask(owner)
             }),
             new Sequence(new List<Node>
             {
