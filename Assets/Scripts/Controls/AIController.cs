@@ -51,24 +51,22 @@ public sealed class AIController : UnitController
                 _tactician.ChooseTypeAndCountUnit(data);
                 break;
             
-            case EActionType.Attack:
+            case EActionType.MakeSquad:
+                data.package.Add("Army", _army);
+                _tactician.CreateSquad(data, _army);
                 break;
+            
+            case EActionType.Move:
+                _tactician.ChooseDestination(data, _army);
+                break;
+            
             case EActionType.Build:
-                //data.package.Add("Factory", factory);
                 Func<int, Vector3, bool> request = RequestFactoryBuild;
-                SelectedFactory = factory;
+                _selectedFactory = factory;
                 data.package.Add("Request", request);
 
                 _tactician.ChooseTypeAndPosFactory(data);
                 
-                break;
-            case EActionType.Conquest:
-                break;
-            case EActionType.Defend:
-                break;
-            case EActionType.Move:
-                break;
-            case EActionType.Wait:
                 break;
         }
 

@@ -25,10 +25,6 @@ public class A_Build : AIAction
         {
             switch (pack.Key)
             {
-                /*case "Factory":
-                    factory = (Factory)pack.Value;
-                    break;*/
-                
                 case "Request":
                     request = (Func<int, Vector3, bool>)pack.Value;
                     break;
@@ -51,12 +47,6 @@ public class A_Build : AIAction
             Debug.Log("Factory not initialize");
             return false;
         }
-        
-        /*else if (!factory)
-        {
-            Debug.Log("Factory not initialize");
-            return false;
-        }*/
         else if (request == null)
         {
             Debug.Log("request not set");
@@ -69,6 +59,8 @@ public class A_Build : AIAction
         }
 
         request(Type, pos);
+        Debug.Log("Build execute");
+
         return true;    
     }
 

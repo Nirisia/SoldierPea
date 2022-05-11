@@ -33,6 +33,8 @@ public class Army : MonoBehaviour
 
 	public List<Unit> UnitList		=> _unitList;
 	public List<Factory> FactoryList => _factoryList;
+	public List<Squad> SquadList => _squadList;
+
 
 	/* Add/Remove Methods */
 	public void AddFactory(Factory factory)
@@ -61,6 +63,11 @@ public class Army : MonoBehaviour
 		_unitList.Add(unit);
 	}
 
+	virtual public void AddSquad(Squad squad)
+	{
+		_squadList.Add(squad);
+	}
+	
 	/*====== Init Methods ======*/
 
 	void GetTeamExistingFactory()

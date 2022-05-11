@@ -8,12 +8,10 @@ using UnityEngine;
 public enum EActionType
 {
     MakeUnit,
-    Attack,
+    MakeSquad,
     Build,
-    Conquest,
-    Defend,
     Move,
-    Wait,
+    
     None
 }
 
@@ -41,6 +39,8 @@ public class AITactician : MonoBehaviour
     private UtilitySystem US;
 
 
+    private bool bIsSquad = false;
+    private bool bWait = false;
     private void Awake()
     {
         SetTactic();
@@ -54,14 +54,29 @@ public class AITactician : MonoBehaviour
 
     public void SetTactic()
     {
+        Tactic.Clear();
+        Tactic.Add(SelectAction(EActionType.MakeUnit));
+        Tactic.Add(SelectAction(EActionType.Build));
+        Tactic.Add(SelectAction(EActionType.MakeSquad));
+        bIsSquad = true;
+        Tactic.Add(SelectAction(EActionType.Move));
+        bIsSquad = false;
+        Tactic.Add(SelectAction(EActionType.Move));
+
+    }
+
+    AIAction SelectAction(EActionType type)
+    {
         foreach (var action in Actions)
         {
-            if (action.AType == EActionType.Build)
+            if (action.AType == type)
             {
-                Tactic.Add(action);          
+                return action;
             }
         }
-        
+
+        Debug.LogError("Not action found");
+        return null;
     }
     public void ExecuteTactic(Data data)
     {
@@ -88,6 +103,33 @@ public class AITactician : MonoBehaviour
         Vector3 pos = new Vector3(20,0,0);
         data.package.Add("Pos", pos);
         
+    }
+    
+    public void CreateSquad(in Data data, Army army)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            data.package.Add("Unit", army.UnitList[i]);
+        }
+    }
+    
+    public void ChooseDestination(in Data data, Army army)
+    {
+
+        if (bIsSquad)
+        {
+            data.package.Add("Squad", army.SquadList[0]);
+            data.package.Add("Pos", new Vector3(50,50,0));
+        }
+
+        else
+        {
+            data.package.Add("Unit", army.UnitList[4]);
+            data.package.Add("Pos", new Vector3(50,-50,0));
+        }
+
+        
+
     }
     
 }

@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7297818c38d60346ae177b48580cbb0, type: 3}
   m_Name: Move
   m_EditorClassIdentifier: 
-  AType: 5
+  AType: 3
