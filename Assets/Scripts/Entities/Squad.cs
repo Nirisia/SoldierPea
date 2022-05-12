@@ -9,7 +9,8 @@ using System.Threading.Tasks;
  * as Boids. */
 public class Squad : MonoBehaviour
 {
-	public List<Unit> _group = new List<Unit>();
+	private NavMeshPath _path	= null;
+	public List<Unit> _group	= new List<Unit>();
 
 	public float _alignementWeight		= 0.5f;
 	public float _cohesionWeight		= 0.5f;
@@ -34,12 +35,17 @@ public class Squad : MonoBehaviour
 
 	public void Move(Vector3 desiredPos_)
 	{
-		_desiredPosition = desiredPos_;
+		if (_group.Count <= 0)
+			return;
 
+		_desiredPosition = desiredPos_;
+		NavMesh.CalculatePath(_group[0].transform.position, _desiredPosition, 0, _path);
+		
 		for (int i = 0; i < _group.Count; i++)
 		{
-			_group[i].NavMeshAgent.isStopped = false;
+			//_group[i].NavMeshAgent.stoppingDistance = _group[i].NavMeshAgent.radius + 1.0f;
 			_group[i].NavMeshAgent.SetDestination(_desiredPosition);
+			_group[i].NavMeshAgent.isStopped = true;
 		}
 
 		_moves = true;
@@ -47,7 +53,7 @@ public class Squad : MonoBehaviour
 
 	private void ComputeUnitsMovement()
 	{
-		_moves = false;
+		//_moves = false;
 		List<Unit>[]		neighbours			= new List<Unit>[_group.Count];
 		Vector3[]			desiredVelocities	= new Vector3[_group.Count];
 
@@ -56,26 +62,15 @@ public class Squad : MonoBehaviour
 			Unit currentUnit = _group[i];
 			neighbours[i] = new List<Unit>();
 
-			currentUnit.NavMeshAgent.isStopped = currentUnit.NavMeshAgent.remainingDistance <= currentUnit.NavMeshAgent.stoppingDistance;
-			_moves |= !currentUnit.NavMeshAgent.isStopped;
-			if (currentUnit.NavMeshAgent.isStopped)
-				continue;
-
-			RaycastHit hit;
-			if (Physics.Raycast(currentUnit.transform.position + Vector3.up,currentUnit.transform.forward, out hit, _rangeOfSight))
-			{
-				NavMeshAgent agent = hit.collider.GetComponent<NavMeshAgent>();
-
-				Debug.Log(hit.collider.name);
-
-				if (agent && agent.isStopped)
-					currentUnit.NavMeshAgent.isStopped = true;
-			}
-
+			//currentUnit.NavMeshAgent.isStopped = currentUnit.NavMeshAgent.remainingDistance <= currentUnit.NavMeshAgent.radius;
+			//_moves |= !currentUnit.NavMeshAgent.isStopped;
+			//if (currentUnit.NavMeshAgent.isStopped)
+			//	continue;
 
 			for (int j = 0; j < _group.Count; j++)
 			{
-				Unit testUnit		= _group[j];
+				Unit testUnit = _group[j];
+
 				Vector3 vecToTest	= testUnit.transform.position - currentUnit.transform.position;
 				vecToTest.y			= 0;
 
@@ -93,7 +88,9 @@ public class Squad : MonoBehaviour
 
 		for (int i = 0; i < _group.Count; i++)
 		{
-			_group[i].NavMeshAgent.velocity = Vector3.ClampMagnitude(_group[i].NavMeshAgent.desiredVelocity + _group[i].NavMeshAgent.velocity + desiredVelocities[i], _group[i].NavMeshAgent.speed);
+			_group[i].NavMeshAgent.velocity = Vector3.ClampMagnitude(desiredVelocities[i] - _group[i].NavMeshAgent.velocity, _group[i].NavMeshAgent.speed) + _group[i].NavMeshAgent.velocity;
+			_group[i].transform.position += _group[i].NavMeshAgent.velocity * Time.fixedDeltaTime;
+			Debug.Log(_group[i].NavMeshAgent.velocity);
 		}
 	}
 
@@ -101,9 +98,9 @@ public class Squad : MonoBehaviour
 	{
 		Vector3 unitDesiredVelocity = Vector3.zero;
 
-		unitDesiredVelocity += _alignementWeight * GetAlignement(unit_, neighbours_);
-		unitDesiredVelocity += _cohesionWeight	 * GetCohesion(unit_, neighbours_);
-		unitDesiredVelocity += _separationWeight * GetSeparation(unit_, neighbours_);
+		unitDesiredVelocity += _alignementWeight * (GetAlignement(unit_, neighbours_));
+		unitDesiredVelocity += _cohesionWeight	 * (GetCohesion(unit_, neighbours_)	 );
+		unitDesiredVelocity += _separationWeight * (GetSeparation(unit_, neighbours_));
 
 		return unitDesiredVelocity * unit_.NavMeshAgent.speed;
 	}
@@ -114,10 +111,11 @@ public class Squad : MonoBehaviour
 
 		for (int i = 0; i < neighbours_.Count; i++)
 		{
-			alignement += neighbours_[i].NavMeshAgent.desiredVelocity;
+			alignement += neighbours_[i].NavMeshAgent.velocity;
 		}
 
-		alignement /= neighbours_.Count;
+		alignement += unit_.NavMeshAgent.desiredVelocity;
+		alignement /= neighbours_.Count + 1;
 		return alignement.normalized;
 	}
 
