@@ -13,9 +13,6 @@ public class Squad
 
 	public List<Unit> _group	= new List<Unit>();
 
-	public float _viewAngle		= 60.0f;
-	public float _rangeOfSight	= 100.0f;
-
 	private Vector3	_desiredPosition	= Vector3.zero;
 	public	Vector3	_currentPos			= Vector3.zero;
 	private bool	_moves				= false;
@@ -24,7 +21,7 @@ public class Squad
 	private List<float> _previousSpeeds = new List<float>();		 
 
 
-	/*===== Init Methods =====*/
+	/*===== Init/Reset Methods =====*/
 
 	private void InitMoveData()
 	{
@@ -59,12 +56,26 @@ public class Squad
 		overrallSpeedSqrd	/= _group.Count;
 		overrallSpeedSqrd	-= overrallSpeed * overrallSpeed;
 
-		/* */
+		/* make our standard deviation, substract from our meean to have a 
+		 * "sped up" speed for slow units and a "slowed" speed for faster units.
+		 * we'll prevent being too slow by taking the speed of the unit with min speed
+		 * of the batch if standard deviation is too big. */
 		overrallSpeed		= Mathf.Max(overrallSpeed - Mathf.Sqrt(overrallSpeedSqrd),minSpeed);
 
 		for (int i = 0; i < _group.Count; i++)
 		{
 			_group[i].NavMeshAgent.speed = overrallSpeed;
+		}
+	}
+
+	private void ResetMoveData()
+	{
+		for (int i = 0; i < _group.Count; i++)
+		{
+			/* change values of unit  */
+			_group[i].NavMeshAgent.velocity		= Vector3.zero;
+			_group[i].NavMeshAgent.isStopped	= true;
+			_group[i].NavMeshAgent.autoBraking	= true;
 		}
 	}
 
@@ -94,15 +105,26 @@ public class Squad
 
 	private void ComputeUnitsMovement()
 	{
-		//_moves = false;
-		List<Unit>[]		neighbours			= new List<Unit>[_group.Count];
-		Vector3[]			desiredVelocities	= new Vector3[_group.Count];
-		_currentPos = Vector3.zero;
+		/* infos to get boid vector */
+		List<Unit>[] neighbours			= new List<Unit>[_group.Count];
+		Vector3[]	 desiredVelocities	= new Vector3[_group.Count];
+
+		/* tests if still moves */
+		_moves		= false;
+		_currentPos	= Vector3.zero;
+		int count	= 0;
 
 		for (int i = 0; i < _group.Count; i++)//ParallelLoopResult result = Parallel.For(1, _group.Count, (i) => 
 		{
 			Unit currentUnit = _group[i];
+			bool stop = currentUnit.NavMeshAgent.isStopped;
+
+			_moves |= !stop;
+			if (stop)
+				continue;
+
 			neighbours[i] = new List<Unit>();
+			count++;
 
 			for (int j = 0; j < _group.Count; j++)
 			{
@@ -113,7 +135,8 @@ public class Squad
 
 				float angle = Mathf.Abs(Vector3.Dot(currentUnit.transform.forward, vecToTest.normalized));
 
-				if (angle <= (Mathf.Deg2Rad * _viewAngle) && vecToTest.sqrMagnitude <= (_rangeOfSight * _rangeOfSight))
+				if (angle <= (Mathf.Deg2Rad * currentUnit.GetUnitData.UnitViewAngle) 
+				&& vecToTest.sqrMagnitude <= (currentUnit.GetUnitData.UnitRangeOfSight * currentUnit.GetUnitData.UnitRangeOfSight))
 				{
 					neighbours[i].Add(testUnit);
 				}
@@ -125,24 +148,22 @@ public class Squad
 			desiredVelocities[i] = ComputeUnitMovement(currentUnit, neighbours[i]);
 		}//);
 
-		_currentPos /= _group.Count;
+		_currentPos /= count;
 		
 
-		if (Vector3.Distance(_currentPos, _desiredPosition) <= _radius)
+		if (Vector3.Distance(_currentPos, _desiredPosition) <= _radius || !_moves)
 		{
 			_moves = false;
-			for (int i = 0; i < _group.Count; i++)
-			{
-				_group[i].NavMeshAgent.velocity	 = Vector3.zero;
-				_group[i].NavMeshAgent.isStopped = true;
-			}
-		
+			ResetMoveData();
 			return;
 		}
 
 		for (int i = 0; i < _group.Count; i++)
 		{
-			_group[i].NavMeshAgent.velocity = Vector3.ClampMagnitude(desiredVelocities[i] + _group[i].NavMeshAgent.velocity, _group[i].NavMeshAgent.speed);
+			if (_group[i].NavMeshAgent.isStopped)
+				_group[i].NavMeshAgent.velocity = Vector3.zero;
+			else
+				_group[i].NavMeshAgent.velocity = Vector3.ClampMagnitude(desiredVelocities[i] + _group[i].NavMeshAgent.velocity, _group[i].NavMeshAgent.speed);
 		}
 	}
 
@@ -150,9 +171,9 @@ public class Squad
 	{
 		Vector3 unitDesiredVelocity = Vector3.zero;
 
-		unitDesiredVelocity += unit_.GetUnitData.SquadAlignement * (GetAlignement(unit_, neighbours_));
-		unitDesiredVelocity += unit_.GetUnitData.SquadCohesion * (GetCohesion(unit_, neighbours_)	 );
-		unitDesiredVelocity += unit_.GetUnitData.SquadSeparation * (GetSeparation(unit_, neighbours_));
+		unitDesiredVelocity += unit_.GetUnitData.SquadAlignement * GetAlignement(unit_, neighbours_);
+		unitDesiredVelocity += unit_.GetUnitData.SquadCohesion	 * GetCohesion(unit_, neighbours_);
+		unitDesiredVelocity += unit_.GetUnitData.SquadSeparation * GetSeparation(unit_, neighbours_);
 
 		return unitDesiredVelocity * unit_.NavMeshAgent.speed - unit_.NavMeshAgent.velocity;
 	}
@@ -167,7 +188,8 @@ public class Squad
 		}
 		
 		alignement /= neighbours_.Count;
-		return alignement.normalized;
+		alignement += unit_.NavMeshAgent.desiredVelocity;
+		return alignement;
 	}
 
 	private Vector3 GetCohesion(Unit unit_, List<Unit> neighbours_)
