@@ -105,7 +105,7 @@ public class Squad
 
 	private void ComputeUnitsMovement()
 	{
-		//_moves = false;
+		_moves = false;
 		List<Unit>[]		neighbours			= new List<Unit>[_group.Count];
 		Vector3[]			desiredVelocities	= new Vector3[_group.Count];
 		_currentPos = Vector3.zero;
@@ -113,7 +113,10 @@ public class Squad
 		for (int i = 0; i < _group.Count; i++)//ParallelLoopResult result = Parallel.For(1, _group.Count, (i) => 
 		{
 			Unit currentUnit = _group[i];
-			if (currentUnit.NavMeshAgent.isStopped)
+			bool stop = currentUnit.NavMeshAgent.isStopped;
+
+			_moves |= !stop;
+			if (stop)
 				continue;
 
 			neighbours[i] = new List<Unit>();
@@ -143,7 +146,7 @@ public class Squad
 		_currentPos /= _group.Count;
 		
 
-		if (Vector3.Distance(_currentPos, _desiredPosition) <= _radius)
+		if (Vector3.Distance(_currentPos, _desiredPosition) <= _radius || !_moves)
 		{
 			_moves = false;
 			ResetMoveData();
@@ -163,9 +166,9 @@ public class Squad
 	{
 		Vector3 unitDesiredVelocity = Vector3.zero;
 
-		unitDesiredVelocity += unit_.GetUnitData.SquadAlignement * (GetAlignement(unit_, neighbours_));
-		unitDesiredVelocity += unit_.GetUnitData.SquadCohesion * (GetCohesion(unit_, neighbours_)	 );
-		unitDesiredVelocity += unit_.GetUnitData.SquadSeparation * (GetSeparation(unit_, neighbours_));
+		unitDesiredVelocity += unit_.GetUnitData.SquadAlignement * GetAlignement(unit_, neighbours_);
+		unitDesiredVelocity += unit_.GetUnitData.SquadCohesion	 * GetCohesion(unit_, neighbours_);
+		unitDesiredVelocity += unit_.GetUnitData.SquadSeparation * GetSeparation(unit_, neighbours_);
 
 		return unitDesiredVelocity * unit_.NavMeshAgent.speed - unit_.NavMeshAgent.velocity;
 	}
