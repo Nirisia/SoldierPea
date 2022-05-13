@@ -18,7 +18,7 @@ public class UnitController : MonoBehaviour
 	#region Members
 	/*=============== Members ===============*/
 
-	protected Army	  _army				= new Army();
+	protected Army	  _army				= null;
 	protected Factory _selectedFactory	= null;
 
 	/*=============== END Members ===============*/

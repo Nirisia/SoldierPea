@@ -9,18 +9,15 @@ using System.Threading.Tasks;
  * as Boids. */
 public class Squad : MonoBehaviour
 {
-	private NavMeshPath _path	= null;
-	public List<Unit> _group	= new List<Unit>();
-
-	public float _alignementWeight		= 0.5f;
-	public float _cohesionWeight		= 0.5f;
-	public float _separationWeight		= 0.5f;
+	public List<Unit>	_group	= new List<Unit>();
 
 	public float _viewAngle		= 60.0f;
 	public float _rangeOfSight	= 100.0f;
 
-	public Vector3	_desiredPosition = Vector3.zero;
-	public bool		_moves = false;
+	private Vector3	_desiredPosition	= Vector3.zero;
+	public	Vector3	_currentPos			= Vector3.zero;
+	private bool	_moves				= false;
+	private float	_radius				= 0.0f;
 
 	// Update is called once per frame
 	public void UpdateMovement()
@@ -39,14 +36,19 @@ public class Squad : MonoBehaviour
 			return;
 
 		_desiredPosition = desiredPos_;
-		NavMesh.CalculatePath(_group[0].transform.position, _desiredPosition, 0, _path);
-		
+
 		for (int i = 0; i < _group.Count; i++)
 		{
 			//_group[i].NavMeshAgent.stoppingDistance = _group[i].NavMeshAgent.radius + 1.0f;
 			_group[i].NavMeshAgent.SetDestination(_desiredPosition);
-			_group[i].NavMeshAgent.isStopped = true;
+			_group[i].NavMeshAgent.isStopped	= false;
+			_group[i].NavMeshAgent.autoBraking	= false;
+			_currentPos += _group[i].transform.position;
+			_radius		+= _group[i].NavMeshAgent.radius;
 		}
+
+		_currentPos /= _group.Count;
+		_radius /= _group.Count;
 
 		_moves = true;
 	}
@@ -56,16 +58,12 @@ public class Squad : MonoBehaviour
 		//_moves = false;
 		List<Unit>[]		neighbours			= new List<Unit>[_group.Count];
 		Vector3[]			desiredVelocities	= new Vector3[_group.Count];
+		_currentPos = Vector3.zero;
 
 		for (int i = 0; i < _group.Count; i++)//ParallelLoopResult result = Parallel.For(1, _group.Count, (i) => 
 		{
 			Unit currentUnit = _group[i];
 			neighbours[i] = new List<Unit>();
-
-			//currentUnit.NavMeshAgent.isStopped = currentUnit.NavMeshAgent.remainingDistance <= currentUnit.NavMeshAgent.radius;
-			//_moves |= !currentUnit.NavMeshAgent.isStopped;
-			//if (currentUnit.NavMeshAgent.isStopped)
-			//	continue;
 
 			for (int j = 0; j < _group.Count; j++)
 			{
@@ -83,14 +81,29 @@ public class Squad : MonoBehaviour
 
 			}
 
+			_currentPos += currentUnit.transform.position;
+
 			desiredVelocities[i] = ComputeUnitMovement(currentUnit, neighbours[i]);
 		}//);
 
+		_currentPos /= _group.Count;
+		
+
+		if (Vector3.Distance(_currentPos, _desiredPosition) <= _radius)
+		{
+			_moves = false;
+			for (int i = 0; i < _group.Count; i++)
+			{
+				_group[i].NavMeshAgent.velocity	 = Vector3.zero;
+				_group[i].NavMeshAgent.isStopped = true;
+			}
+		
+			return;
+		}
+
 		for (int i = 0; i < _group.Count; i++)
 		{
-			_group[i].NavMeshAgent.velocity = Vector3.ClampMagnitude(desiredVelocities[i] - _group[i].NavMeshAgent.velocity, _group[i].NavMeshAgent.speed) + _group[i].NavMeshAgent.velocity;
-			_group[i].transform.position += _group[i].NavMeshAgent.velocity * Time.fixedDeltaTime;
-			Debug.Log(_group[i].NavMeshAgent.velocity);
+			_group[i].NavMeshAgent.velocity = Vector3.ClampMagnitude(desiredVelocities[i] + _group[i].NavMeshAgent.velocity, _group[i].NavMeshAgent.speed);
 		}
 	}
 
@@ -98,11 +111,11 @@ public class Squad : MonoBehaviour
 	{
 		Vector3 unitDesiredVelocity = Vector3.zero;
 
-		unitDesiredVelocity += _alignementWeight * (GetAlignement(unit_, neighbours_));
-		unitDesiredVelocity += _cohesionWeight	 * (GetCohesion(unit_, neighbours_)	 );
-		unitDesiredVelocity += _separationWeight * (GetSeparation(unit_, neighbours_));
+		unitDesiredVelocity += unit_.GetUnitData.SquadAlignement * (GetAlignement(unit_, neighbours_));
+		unitDesiredVelocity += unit_.GetUnitData.SquadCohesion * (GetCohesion(unit_, neighbours_)	 );
+		unitDesiredVelocity += unit_.GetUnitData.SquadSeparation * (GetSeparation(unit_, neighbours_));
 
-		return unitDesiredVelocity * unit_.NavMeshAgent.speed;
+		return unitDesiredVelocity * unit_.NavMeshAgent.speed - unit_.NavMeshAgent.velocity;
 	}
 
 	private Vector3 GetAlignement(Unit unit_, List<Unit> neighbours_)
@@ -111,11 +124,10 @@ public class Squad : MonoBehaviour
 
 		for (int i = 0; i < neighbours_.Count; i++)
 		{
-			alignement += neighbours_[i].NavMeshAgent.velocity;
+			alignement += neighbours_[i].NavMeshAgent.desiredVelocity;
 		}
-
-		alignement += unit_.NavMeshAgent.desiredVelocity;
-		alignement /= neighbours_.Count + 1;
+		
+		alignement /= neighbours_.Count;
 		return alignement.normalized;
 	}
 
@@ -138,12 +150,18 @@ public class Squad : MonoBehaviour
 	{
 		Vector3 separation = Vector3.zero;
 
+		int count = 0;
 		for (int i = 0; i < neighbours_.Count; i++)
 		{
-			separation += neighbours_[i].transform.position - unit_.transform.position;
+			Vector3 temp = neighbours_[i].transform.position - unit_.transform.position;
+			if (temp.sqrMagnitude <= unit_.GetUnitData.SquadSeparationDist)
+			{
+				separation += temp;
+				count++;
+			}
 		}
 
-		separation /= neighbours_.Count;
+		separation /= count;
 
 		return -separation.normalized;
 	}

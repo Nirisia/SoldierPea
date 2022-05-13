@@ -10,11 +10,6 @@ public class Army : MonoBehaviour
 	[SerializeField]
 	private ETeam _team;
 
-	/* squad boids settings */
-	[SerializeField]private float _squadAlignement	= 0.5f;
-	[SerializeField]private float _squadCohesion	= 0.5f;
-	[SerializeField]private float _squadSeparation	= 0.5f;
-
 	/*====== Members ======*/
 
 	public UnitController _owner = null;
@@ -37,6 +32,12 @@ public class Army : MonoBehaviour
 	public List<Unit> UnitList		=> _unitList;
 	public List<Factory> FactoryList => _factoryList;
 	public List<Squad> SquadList => _squadList;
+
+	private void OnDrawGizmos()
+	{
+		if (_squadList.Count > 0)
+			Gizmos.DrawSphere(_squadList[0]._currentPos, 1.0f);
+	}
 
 
 	/* Add/Remove Methods */
@@ -91,12 +92,6 @@ public class Army : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		for (int i = 0; i < _squadList.Count; i++)
-		{
-			_squadList[i]._alignementWeight = _squadAlignement;
-			_squadList[i]._cohesionWeight	= _squadCohesion;
-			_squadList[i]._separationWeight = _squadSeparation;
-		}
 	}
 
 	// Update is called once per frame

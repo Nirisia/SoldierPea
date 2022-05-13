@@ -10,4 +10,10 @@ public class EntityDataScriptable : ScriptableObject
 
     [Header("Health Points")]
     public int MaxHP = 100;
+
+	[Header("Squad")]
+	public float SquadAlignement		= 0.5f;
+	public float SquadCohesion			= 0.5f;
+	public float SquadSeparation		= 0.5f;
+	public float SquadSeparationDist	= 5.0f;
 }
