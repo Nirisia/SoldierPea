@@ -16,6 +16,7 @@ public class TargetBuilding : MonoBehaviour
     Material NeutralMaterial = null;
     MeshRenderer BuildingMeshRenderer = null;
     Image GaugeImage;
+    [SerializeField]
     int[] TeamScore;
     float CaptureGaugeValue;
     ETeam OwningTeam = ETeam.Neutral;

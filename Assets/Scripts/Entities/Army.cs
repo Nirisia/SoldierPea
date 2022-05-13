@@ -10,8 +10,6 @@ public class Army : MonoBehaviour
 	[SerializeField]
 	private ETeam _team;
 
-
-
 	/*====== Members ======*/
 
 	public UnitController _owner = null;
@@ -33,6 +31,14 @@ public class Army : MonoBehaviour
 
 	public List<Unit> UnitList		=> _unitList;
 	public List<Factory> FactoryList => _factoryList;
+	public List<Squad> SquadList => _squadList;
+
+	private void OnDrawGizmos()
+	{
+		if (_squadList.Count > 0)
+			Gizmos.DrawSphere(_squadList[0]._currentPos, 1.0f);
+	}
+
 
 	/* Add/Remove Methods */
 	public void AddFactory(Factory factory)
@@ -61,6 +67,11 @@ public class Army : MonoBehaviour
 		_unitList.Add(unit);
 	}
 
+	virtual public void AddSquad(Squad squad)
+	{
+		_squadList.Add(squad);
+	}
+	
 	/*====== Init Methods ======*/
 
 	void GetTeamExistingFactory()
@@ -78,16 +89,22 @@ public class Army : MonoBehaviour
 		Debug.Log("found " + _factoryList.Count + " factory for team " + _team.ToString());
 	}
 
-
 	// Start is called before the first frame update
 	void Start()
-    {
-        
-    }
+	{
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	// Update is called once per frame
+	void Update()
+	{
+		
+	}
+
+	private void FixedUpdate()
+	{
+		for (int i = 0; i < _squadList.Count; i++)
+		{
+			_squadList[i].UpdateMovement();
+		}
+	}
 }

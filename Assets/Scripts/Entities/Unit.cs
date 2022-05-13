@@ -7,12 +7,14 @@ public class Unit : BaseEntity
 
     Transform BulletSlot;
     float LastActionDate = 0f;
-    BaseEntity EntityTarget = null;
-    TargetBuilding CaptureTarget = null;
-    NavMeshAgent NavMeshAgent;
+    public BaseEntity EntityTarget = null;
+    public TargetBuilding CaptureTarget = null;
+    public NavMeshAgent NavMeshAgent;
     public UnitDataScriptable GetUnitData { get { return UnitData; } }
     public int Cost { get { return UnitData.Cost; } }
     public int GetTypeId { get { return UnitData.TypeId; } }
+
+    public bool isCapturing = false;
     override public void Init(ETeam _team)
     {
         if (IsInitialized)
@@ -59,14 +61,7 @@ public class Unit : BaseEntity
     }
     override protected void Update()
     {
-        // Attack / repair task debug test $$$ to be removed for AI implementation
-        if (EntityTarget != null)
-        {
-            if (EntityTarget.GetTeam() != GetTeam())
-                ComputeAttack();
-            else
-                ComputeRepairing();
-        }
+
 	}
     #endregion
 
@@ -147,6 +142,37 @@ public class Unit : BaseEntity
         if (entity.GetTeam() == GetTeam())
             StartRepairing(entity);
     }
+
+    public bool CanSeeEnemy()
+    {
+        Collider[] targetColliders = Physics.OverlapSphere(transform.position, GetUnitData.AttackDistanceMax);
+        foreach (var targetCollider in targetColliders)
+        {
+            BaseEntity enemy = targetCollider.GetComponent<BaseEntity>();
+            if (enemy != null)
+            {
+                EntityTarget = enemy;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool CanSeePoint()
+    {
+        Collider[] targetColliders = Physics.OverlapSphere(transform.position, GetUnitData.CaptureDistanceMax);
+        foreach (var targetCollider in targetColliders)
+        {
+            TargetBuilding point = targetCollider.GetComponent<TargetBuilding>();
+            if (point != null)
+            {
+               CaptureTarget = point;
+                return true;
+            }
+        }
+        return false;
+    }
+
     public bool CanAttack(BaseEntity target)
     {
         if (target == null)
@@ -217,6 +243,7 @@ public class Unit : BaseEntity
 
         CaptureTarget = target;
         CaptureTarget.StartCapture(this);
+        isCapturing = true;
     }
     public void StopCapture()
     {
