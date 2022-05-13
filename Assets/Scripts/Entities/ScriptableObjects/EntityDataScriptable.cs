@@ -16,4 +16,6 @@ public class EntityDataScriptable : ScriptableObject
 	public float SquadCohesion			= 0.5f;
 	public float SquadSeparation		= 0.5f;
 	public float SquadSeparationDist	= 5.0f;
+	public float UnitViewAngle			= 45.0f;
+	public float UnitRangeOfSight		= 100.0f;
 }

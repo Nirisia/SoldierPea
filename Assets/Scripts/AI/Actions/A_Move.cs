@@ -60,7 +60,7 @@ public class A_Move : AIAction
             return false;
         }
         
-        if(CanMove && squad)
+        if(CanMove && squad == null)
             squad.Move(pos);
         else if(CanMove && unit)
             unit.SetTargetPos(pos);
