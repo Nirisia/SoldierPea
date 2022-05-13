@@ -105,10 +105,14 @@ public class Squad
 
 	private void ComputeUnitsMovement()
 	{
-		_moves = false;
-		List<Unit>[]		neighbours			= new List<Unit>[_group.Count];
-		Vector3[]			desiredVelocities	= new Vector3[_group.Count];
-		_currentPos = Vector3.zero;
+		/* infos to get boid vector */
+		List<Unit>[] neighbours			= new List<Unit>[_group.Count];
+		Vector3[]	 desiredVelocities	= new Vector3[_group.Count];
+
+		/* tests if still moves */
+		_moves		= false;
+		_currentPos	= Vector3.zero;
+		int count	= 0;
 
 		for (int i = 0; i < _group.Count; i++)//ParallelLoopResult result = Parallel.For(1, _group.Count, (i) => 
 		{
@@ -120,6 +124,7 @@ public class Squad
 				continue;
 
 			neighbours[i] = new List<Unit>();
+			count++;
 
 			for (int j = 0; j < _group.Count; j++)
 			{
@@ -143,7 +148,7 @@ public class Squad
 			desiredVelocities[i] = ComputeUnitMovement(currentUnit, neighbours[i]);
 		}//);
 
-		_currentPos /= _group.Count;
+		_currentPos /= count;
 		
 
 		if (Vector3.Distance(_currentPos, _desiredPosition) <= _radius || !_moves)
