@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 /* a class that represents a group. 
  * Will be used to make move and stop a group of units
  * as Boids. */
-public class Squad : MonoBehaviour
+public class Squad
 {
-	public List<Unit>	_group	= new List<Unit>();
+	/*===== Members =====*/
+
+	public List<Unit> _group	= new List<Unit>();
 
 	public float _viewAngle		= 60.0f;
 	public float _rangeOfSight	= 100.0f;
@@ -19,7 +21,55 @@ public class Squad : MonoBehaviour
 	private bool	_moves				= false;
 	private float	_radius				= 0.0f;
 
-	// Update is called once per frame
+	private List<float> _previousSpeeds = new List<float>();		 
+
+
+	/*===== Init Methods =====*/
+
+	private void InitMoveData()
+	{
+		/* we'll compute the mean, and the standard deviation for the squad speed */
+		float overrallSpeed		= 0.0f;
+		float overrallSpeedSqrd = 0.0f;
+		float minSpeed			= float.MaxValue;
+
+		for (int i = 0; i < _group.Count; i++)
+		{
+			/* change values of unit  */
+			_group[i].NavMeshAgent.SetDestination(_desiredPosition);
+			_group[i].NavMeshAgent.isStopped	= false;
+			_group[i].NavMeshAgent.autoBraking	= false;
+
+			/* squad values */
+			_currentPos += _group[i].transform.position;
+			_radius		+= _group[i].NavMeshAgent.radius;
+
+			/* speed */
+			overrallSpeed		+= _group[i].NavMeshAgent.speed;
+			overrallSpeedSqrd	+= _group[i].NavMeshAgent.speed * _group[i].NavMeshAgent.speed;
+			minSpeed			= Mathf.Min(_group[i].NavMeshAgent.speed, minSpeed);
+			_previousSpeeds.Add(_group[i].NavMeshAgent.speed);
+		}
+
+		_currentPos		/= _group.Count;
+		_radius			/= _group.Count;
+
+		/* create our mean and our variance */
+		overrallSpeed		/= _group.Count;
+		overrallSpeedSqrd	/= _group.Count;
+		overrallSpeedSqrd	-= overrallSpeed * overrallSpeed;
+
+		/* */
+		overrallSpeed		= Mathf.Max(overrallSpeed - Mathf.Sqrt(overrallSpeedSqrd),minSpeed);
+
+		for (int i = 0; i < _group.Count; i++)
+		{
+			_group[i].NavMeshAgent.speed = overrallSpeed;
+		}
+	}
+
+	/*===== Update Methods =====*/
+
 	public void UpdateMovement()
 	{
 		if (_group.Count > 0 && _moves)
@@ -37,18 +87,7 @@ public class Squad : MonoBehaviour
 
 		_desiredPosition = desiredPos_;
 
-		for (int i = 0; i < _group.Count; i++)
-		{
-			//_group[i].NavMeshAgent.stoppingDistance = _group[i].NavMeshAgent.radius + 1.0f;
-			_group[i].NavMeshAgent.SetDestination(_desiredPosition);
-			_group[i].NavMeshAgent.isStopped	= false;
-			_group[i].NavMeshAgent.autoBraking	= false;
-			_currentPos += _group[i].transform.position;
-			_radius		+= _group[i].NavMeshAgent.radius;
-		}
-
-		_currentPos /= _group.Count;
-		_radius /= _group.Count;
+		InitMoveData();
 
 		_moves = true;
 	}
