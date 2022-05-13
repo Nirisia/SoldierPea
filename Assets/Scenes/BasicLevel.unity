@@ -616,9 +616,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _team: 1
-  _squadAlignement: 0.5
-  _squadCohesion: 0.5
-  _squadSeparation: 0.5
   _owner: {fileID: 0}
 --- !u!1 &400945406
 GameObject:
@@ -1051,6 +1048,26 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 975528103}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1009563771 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 127182, guid: c4c916682eac65748a271387fc795cd5,
+    type: 3}
+  m_PrefabInstance: {fileID: 1439044440}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1009563772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1009563771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b890c7bb6402b224e9876c43c90fc86f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _team: 0
+  _owner: {fileID: 0}
 --- !u!1001 &1071042780
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1141,6 +1158,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerController
       objectReference: {fileID: 0}
+    - target: {fileID: 1942633320057194, guid: dc4ee6691f59b07458286e0cfb38d82d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4514436329004458, guid: dc4ee6691f59b07458286e0cfb38d82d, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -1192,6 +1213,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114127896467981986, guid: dc4ee6691f59b07458286e0cfb38d82d,
         type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114127896467981986, guid: dc4ee6691f59b07458286e0cfb38d82d,
+        type: 3}
       propertyPath: SceneEventSystem
       value: 
       objectReference: {fileID: 1531011709}
@@ -1199,6 +1225,11 @@ PrefabInstance:
         type: 3}
       propertyPath: StartingBuildPoints
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8446335230809480305, guid: dc4ee6691f59b07458286e0cfb38d82d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8446335230809480305, guid: dc4ee6691f59b07458286e0cfb38d82d,
         type: 3}
@@ -1643,6 +1674,72 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6274f44d969a12f4f9c683eb6eef2d05, type: 3}
+--- !u!1001 &1439044440
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 127182, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: m_Name
+      value: UnitFactory_Red (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 401236, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: m_RootOrder
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 401236, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401236, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401236, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -123.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 401236, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 401236, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401236, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401236, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401236, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401236, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401236, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11493676, guid: c4c916682eac65748a271387fc795cd5, type: 3}
+      propertyPath: Team
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8992025400818185061, guid: c4c916682eac65748a271387fc795cd5,
+        type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c4c916682eac65748a271387fc795cd5, type: 3}
 --- !u!1001 &1499775893
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2210,6 +2307,11 @@ PrefabInstance:
       propertyPath: _tactician
       value: 
       objectReference: {fileID: 1885188302}
+    - target: {fileID: 7859672622032877473, guid: fee74b0095774cf4f9701d9fab58813d,
+        type: 3}
+      propertyPath: StartingBuildPoints
+      value: 400
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fee74b0095774cf4f9701d9fab58813d, type: 3}
 --- !u!1 &1885188301 stripped
@@ -2235,6 +2337,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b836b4e3f6cd07e48863548946f8e22c, type: 2}
   - {fileID: 11400000, guid: 88704348f6bc1f84eb7741fb915fdb90, type: 2}
   - {fileID: 11400000, guid: 6c69e72c4f886934bb6241a2b8683715, type: 2}
+  Tactic: []
 --- !u!850595691 &1942774416
 LightingSettings:
   m_ObjectHideFlags: 0
