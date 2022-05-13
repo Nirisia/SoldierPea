@@ -11,13 +11,13 @@ public class A_Build : AIAction
 
     public override bool Execute(Data data)
     {
-        if (data.package.Count != 3)
+        if (data.package.Count != 4)
         {
             Debug.Log("Bad Size of package");
             return false;
         }
         
-        Factory factory = new Factory();
+        Factory factory = null;
         Func<int, Vector3, bool> request = null;
         Vector3 pos = Vector3.negativeInfinity;
         int Type = -1;
@@ -27,6 +27,10 @@ public class A_Build : AIAction
             {
                 case "Request":
                     request = (Func<int, Vector3, bool>)pack.Value;
+                    break;
+                
+                case "Factory":
+                    factory = (Factory)pack.Value;
                     break;
                 
                 case "Pos":
@@ -57,9 +61,17 @@ public class A_Build : AIAction
             Debug.Log("unitType bad value");
             return false;
         }
+        
+        else if (factory == null)
+        {
+            Debug.Log("factory not init");
+            return false;
+        }
 
+        if (factory.IsBuildingUnit)
+            return false;
+        
         request(Type, pos);
-        Debug.Log("Build execute");
 
         return true;    
     }

@@ -616,6 +616,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _team: 1
+  _squadAlignement: 0.5
+  _squadCohesion: 0.5
+  _squadSeparation: 0.5
   _owner: {fileID: 0}
 --- !u!1 &400945406
 GameObject:

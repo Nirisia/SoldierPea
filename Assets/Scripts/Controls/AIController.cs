@@ -23,9 +23,7 @@ public sealed class AIController : UnitController
     protected override void Start()
     {
         base.Start();
-        Data data = new Data();
-        InitData(data);
-        _tactician.ExecuteTactic(data);
+        _army.AddFactory(factory);
         
 
     }
@@ -33,6 +31,9 @@ public sealed class AIController : UnitController
     protected override void Update()
     {
         base.Update();
+        Data data = new Data();
+        if(InitData(data))
+            _tactician.ExecuteTactic(data);
     }
     
     public bool InitData(in Data data)
@@ -47,7 +48,7 @@ public sealed class AIController : UnitController
         switch (_tactician.GetNextAction().AType)
         {
             case EActionType.MakeUnit:
-                data.package.Add("Factory", factory);
+                data.package.Add("Factory", _army.FactoryList[0]);
                 _tactician.ChooseTypeAndCountUnit(data);
                 break;
             
@@ -62,7 +63,9 @@ public sealed class AIController : UnitController
             
             case EActionType.Build:
                 Func<int, Vector3, bool> request = RequestFactoryBuild;
-                _selectedFactory = factory;
+                _selectedFactory = _army.FactoryList[0];
+                data.package.Add("Factory", _army.FactoryList[0]);
+                
                 data.package.Add("Request", request);
 
                 _tactician.ChooseTypeAndPosFactory(data);

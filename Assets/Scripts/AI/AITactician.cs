@@ -26,6 +26,8 @@ public class Data
     
 }
 
+
+
 public class AITactician : MonoBehaviour
 {
     
@@ -35,7 +37,7 @@ public class AITactician : MonoBehaviour
     
     public List<AIAction> Actions = new List<AIAction>();
     
-    private List<AIAction> Tactic = new List<AIAction>();
+    public  List<AIAction> Tactic = new List<AIAction>();
     private UtilitySystem US;
 
 
@@ -56,13 +58,15 @@ public class AITactician : MonoBehaviour
     {
         Tactic.Clear();
         Tactic.Add(SelectAction(EActionType.MakeUnit));
+
         Tactic.Add(SelectAction(EActionType.Build));
+
         Tactic.Add(SelectAction(EActionType.MakeSquad));
         bIsSquad = true;
-        Tactic.Add(SelectAction(EActionType.Move));
+        /*Tactic.Add(SelectAction(EActionType.Move));
         bIsSquad = false;
         Tactic.Add(SelectAction(EActionType.Move));
-
+*/
     }
 
     AIAction SelectAction(EActionType type)
@@ -80,13 +84,19 @@ public class AITactician : MonoBehaviour
     }
     public void ExecuteTactic(Data data)
     {
-        GetNextAction().Execute(data);
-        Tactic.Remove(GetNextAction());
+        if (GetNextAction())
+        {
+            if(GetNextAction().Execute(data))
+                Tactic.Remove(GetNextAction());
+        }
     }
 
 
     public AIAction GetNextAction()
     {
+        if (Tactic.Count <= 0)
+            return null;
+        
         return Tactic[0];
     }
 
@@ -107,10 +117,14 @@ public class AITactician : MonoBehaviour
     
     public void CreateSquad(in Data data, Army army)
     {
-        for (int i = 0; i < 4; i++)
-        {
-            data.package.Add("Unit", army.UnitList[i]);
-        }
+        List<int> TypeList = new List<int>();
+        TypeList.Add(1);
+        List<int>CountsList = new List<int>();
+        CountsList.Add(5);
+        
+        data.package.Add("TypeList", TypeList);
+        data.package.Add("CountsList", CountsList);
+
     }
     
     public void ChooseDestination(in Data data, Army army)

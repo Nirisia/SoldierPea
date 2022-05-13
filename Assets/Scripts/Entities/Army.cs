@@ -23,7 +23,7 @@ public class Army : MonoBehaviour
 
 	/* lists */
 	private	List<Unit>		_unitList	 = new List<Unit>();
-	private	List<Squad>		_squadList	 = new List<Squad>();
+	public	List<Squad>		_squadList	 = new List<Squad>();
 	private	List<Factory>	_factoryList = new List<Factory>();
 
 	/*====== Serialized Field Getter/Setter ======*/

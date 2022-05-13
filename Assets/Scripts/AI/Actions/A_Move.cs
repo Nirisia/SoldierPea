@@ -65,7 +65,6 @@ public class A_Move : AIAction
         else if(CanMove && unit)
             unit.SetTargetPos(pos);
         
-        Debug.Log("Move execute");
         return true;
     }
 

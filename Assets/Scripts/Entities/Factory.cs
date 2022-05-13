@@ -192,7 +192,7 @@ public sealed class Factory : BaseEntity
         if(!Controller)
             Controller = GameServices.GetControllerByTeam(Team);
 
-            int cost = GetUnitCost(unitMenuIndex);
+        int cost = GetUnitCost(unitMenuIndex);
         if (Controller.TotalBuildPoints < cost || BuildingQueue.Count >= MaxBuildingQueueSize)
             return false;
 
