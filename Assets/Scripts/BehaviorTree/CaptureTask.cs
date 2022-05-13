@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using BehaviorTree;
 
 public class CaptureTask : Node
@@ -14,7 +15,9 @@ public class CaptureTask : Node
     public override NodeState Evaluate()
     {
 
-        if (unit.isCapturing == false && unit.CaptureTarget.GetTeam() != unit.GetTeam())
+        if (unit.isCapturing == false 
+            && unit.CaptureTarget.GetTeam() != unit.GetTeam()
+            && Vector3.Distance(unit.NavMeshAgent.destination, unit.CaptureTarget.transform.position) <= unit.GetUnitData.CaptureDistanceMax)
         {
             unit.StartCapture(unit.CaptureTarget);
             state = NodeState.SUCCESS;

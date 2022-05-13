@@ -16,13 +16,13 @@ public class UnitBT : Tree
                 new SeeEnemyTask(owner),
                 new AttackTask(owner),
                 new RepairingTask(owner)
-            }),
+            }),        
             new Sequence(new List<Node>
             {
                 new SeePointTask(owner),
                 new CaptureTask(owner)
             }),
-            new Sequence(),
+            new IsMovingTask(owner),
         });
         return root;
     }
