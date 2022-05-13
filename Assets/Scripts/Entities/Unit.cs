@@ -9,7 +9,7 @@ public class Unit : BaseEntity
     float LastActionDate = 0f;
     public BaseEntity EntityTarget = null;
     public TargetBuilding CaptureTarget = null;
-    NavMeshAgent NavMeshAgent;
+    public NavMeshAgent NavMeshAgent;
     public UnitDataScriptable GetUnitData { get { return UnitData; } }
     public int Cost { get { return UnitData.Cost; } }
     public int GetTypeId { get { return UnitData.TypeId; } }
