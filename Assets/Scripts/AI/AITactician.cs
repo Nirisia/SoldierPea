@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
@@ -39,10 +40,7 @@ public class AITactician : MonoBehaviour
     
     public  List<AIAction> Tactic = new List<AIAction>();
     private UtilitySystem US;
-
-
-    private bool bIsSquad = false;
-    private bool bWait = false;
+    
     private void Awake()
     {
         SetTactic();
@@ -52,8 +50,6 @@ public class AITactician : MonoBehaviour
     {
 
     }
-
-
     public void SetTactic()
     {
         Tactic.Clear();
@@ -62,11 +58,10 @@ public class AITactician : MonoBehaviour
         Tactic.Add(SelectAction(EActionType.Build));
 
         Tactic.Add(SelectAction(EActionType.MakeSquad));
-        bIsSquad = true;
-        /*Tactic.Add(SelectAction(EActionType.Move));
-        bIsSquad = false;
+
         Tactic.Add(SelectAction(EActionType.Move));
-*/
+
+
     }
 
     AIAction SelectAction(EActionType type)
@@ -117,33 +112,31 @@ public class AITactician : MonoBehaviour
     
     public void CreateSquad(in Data data, Army army)
     {
-        List<int> TypeList = new List<int>();
-        TypeList.Add(1);
-        List<int>CountsList = new List<int>();
-        CountsList.Add(5);
+        List<int> typeList = new List<int>();
+        typeList.Add(1);
+        List<int>countsList = new List<int>();
+        countsList.Add(4);
         
-        data.package.Add("TypeList", TypeList);
-        data.package.Add("CountsList", CountsList);
+        data.package.Add("TypeList", typeList);
+        data.package.Add("CountsList", countsList);
 
     }
     
     public void ChooseDestination(in Data data, Army army)
     {
-
-        if (bIsSquad)
-        {
-            data.package.Add("Squad", army.SquadList[0]);
-            data.package.Add("Pos", new Vector3(50,50,0));
-        }
-
-        else
-        {
-            data.package.Add("Unit", army.UnitList[4]);
-            data.package.Add("Pos", new Vector3(50,-50,0));
-        }
-
         
-
+        List<Vector3> Pos = new List<Vector3>();
+        Pos.Add(new Vector3(50,0,70));
+        Pos.Add(new Vector3(0,0,70));
+        
+        List<Squad> squads = new List<Squad>();
+        
+        squads.Add(army.SquadList[0]);
+        squads.Add(army.SquadList[1]);
+        data.package.Add("Squad", squads);
+        data.package.Add("Pos", Pos);
+        
+        
     }
     
 }

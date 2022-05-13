@@ -17,7 +17,7 @@ public class A_MakeSquad : AIAction
             return false;
         }
 
-        Squad squad = null;
+        Squad squad = new Squad();
 
         Army army = null;
         
@@ -106,6 +106,10 @@ public class A_MakeSquad : AIAction
         }
 
         army.AddSquad(squad);
+        Squad test = new Squad();
+        test._group.Add(army.UnitList[4]);
+        army.AddSquad(test);
+        Debug.Log("army:" + army.SquadList.Count);
 
         return true;
     }

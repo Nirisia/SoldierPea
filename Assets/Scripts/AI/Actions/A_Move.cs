@@ -16,26 +16,18 @@ public class A_Move : AIAction
             return false;
         }
         
-        Squad squad = new Squad();
-        Unit unit = new Unit();
-        Vector3 pos = Vector3.negativeInfinity;
-
-        bool CanMove = false;
+        List<Vector3> pos = new List<Vector3>();
+        List<Squad> squads = new List<Squad>();
         foreach (var pack in data.package)
         {
             switch (pack.Key)
             {
                 case "Squad":
-                    squad = (Squad)pack.Value;
-                    CanMove = true;
+                    squads = (List<Squad>)pack.Value;
                     break;
                 
-                case "Unit":
-                    unit = (Unit)pack.Value;
-                    CanMove = true;
-                    break;
                 case "Pos":
-                    pos = (Vector3)pack.Value;
+                    pos = (List<Vector3>)pack.Value;
                     break;
                 
                 default:
@@ -44,26 +36,27 @@ public class A_Move : AIAction
             }
         }
 
-        if (pos == Vector3.negativeInfinity)
+        if (pos.Count <= 0)
         {
-            Debug.Log("Factory not initialize");
+            Debug.Log("position not valid");
             return false;
         }
-        else if (squad == null && !CanMove)
+        else if (squads.Count <= 0)
         {
             Debug.Log("squad not set");
             return false;
         }
-        else if (unit == null && !CanMove)
+
+        else if (squads.Count != pos.Count)
         {
-            Debug.Log("unit not set");
+            Debug.Log(" not match enter squad and pos");
             return false;
         }
         
-        if(CanMove && squad)
-            squad.Move(pos);
-        else if(CanMove && unit)
-            unit.SetTargetPos(pos);
+        for (int i = 0; i < squads.Count; i++)
+        {
+            squads[i].Move(pos[i]);
+        }
         
         return true;
     }
