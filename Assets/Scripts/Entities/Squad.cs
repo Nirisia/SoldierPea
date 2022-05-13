@@ -13,9 +13,6 @@ public class Squad
 
 	public List<Unit> _group	= new List<Unit>();
 
-	public float _viewAngle		= 60.0f;
-	public float _rangeOfSight	= 100.0f;
-
 	private Vector3	_desiredPosition	= Vector3.zero;
 	public	Vector3	_currentPos			= Vector3.zero;
 	private bool	_moves				= false;
@@ -116,6 +113,9 @@ public class Squad
 		for (int i = 0; i < _group.Count; i++)//ParallelLoopResult result = Parallel.For(1, _group.Count, (i) => 
 		{
 			Unit currentUnit = _group[i];
+			if (currentUnit.NavMeshAgent.isStopped)
+				continue;
+
 			neighbours[i] = new List<Unit>();
 
 			for (int j = 0; j < _group.Count; j++)
@@ -127,7 +127,8 @@ public class Squad
 
 				float angle = Mathf.Abs(Vector3.Dot(currentUnit.transform.forward, vecToTest.normalized));
 
-				if (angle <= (Mathf.Deg2Rad * _viewAngle) && vecToTest.sqrMagnitude <= (_rangeOfSight * _rangeOfSight))
+				if (angle <= (Mathf.Deg2Rad * currentUnit.GetUnitData.UnitViewAngle) 
+				&& vecToTest.sqrMagnitude <= (currentUnit.GetUnitData.UnitRangeOfSight * currentUnit.GetUnitData.UnitRangeOfSight))
 				{
 					neighbours[i].Add(testUnit);
 				}
@@ -151,7 +152,10 @@ public class Squad
 
 		for (int i = 0; i < _group.Count; i++)
 		{
-			_group[i].NavMeshAgent.velocity = Vector3.ClampMagnitude(desiredVelocities[i] + _group[i].NavMeshAgent.velocity, _group[i].NavMeshAgent.speed);
+			if (_group[i].NavMeshAgent.isStopped)
+				_group[i].NavMeshAgent.velocity = Vector3.zero;
+			else
+				_group[i].NavMeshAgent.velocity = Vector3.ClampMagnitude(desiredVelocities[i] + _group[i].NavMeshAgent.velocity, _group[i].NavMeshAgent.speed);
 		}
 	}
 
