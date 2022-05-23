@@ -65,6 +65,24 @@ public class A_Move : AIAction
 					return false;
 			}
 		}
+
+		if (moveData_.myArmy == null)
+		{
+			Debug.Log("A_Move: AIController Army not init");
+			return false;
+		}
+		else if (moveData_.enemyArmy == null)
+		{
+			Debug.Log("A_Move: Other Controller Army not init");
+			return false;
+		}
+		else if (moveData_.enemyArmy == null)
+		{
+			Debug.Log("A_Move: Other Controller Army not init");
+			return false;
+		}
+
+		return true;
 	}
 
 }
