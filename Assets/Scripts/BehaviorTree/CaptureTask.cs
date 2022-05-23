@@ -23,9 +23,19 @@ public class CaptureTask : Node
             state = NodeState.SUCCESS;
             return state;
         }
+        else if (Vector3.Distance(unit.NavMeshAgent.destination, unit.CaptureTarget.transform.position) > unit.GetUnitData.CaptureDistanceMax
+                && unit.isCapturing == true)
+        {
+            unit.StopCapture();
+            unit.isCapturing = false;
+            state = NodeState.SUCCESS;
+            return state;
+        }
         else if (unit.CaptureTarget.GetTeam() == unit.GetTeam())
         {
             unit.isCapturing = false;
+            state = NodeState.SUCCESS;
+            return state;
         }
 
         state = NodeState.FAILURE;
