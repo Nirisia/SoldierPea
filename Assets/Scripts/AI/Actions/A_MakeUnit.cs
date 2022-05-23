@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class A_MakeUnit : AIAction
 {
+    [SerializeField] int startCountUnit = 5;
     public override bool Execute(Data data)
     {
         if (data.package.Count != 3)
@@ -13,28 +14,67 @@ public class A_MakeUnit : AIAction
             Debug.Log("Bad Size of package");
             return false;
         }
-        
+
+        int countType0 = 0;
+        int countType1 = 0;
+        int countType2 = 0;
+        int countType3 = 0;
+        int countType4 = 0;
+        int countType5 = 0;
+
+        int totalCount = 0;
+
+
         Factory factory = new Factory();
-        int count = 0;
-        int UnitType = -1;
-        foreach (var pack in data.package)
+
+        Army army = null;
+        Army enemyArmy = null;
+        int buildPoints = 0;
+        
+        foreach(var pack in data.package)
         {
             switch (pack.Key)
             {
-                case "Factory":
-                    factory = (Factory)pack.Value;
+                case "Army":
+                    army = (Army)pack.Value;
                     break;
-                
-                case "Count":
-                    count = (int) pack.Value;
+
+                case "EnemyArmy":
+                    enemyArmy = (Army)pack.Value;
                     break;
-                
-                case "Type":
-                    UnitType = (int) pack.Value;
+
+                case "BuildPoints":
+                    buildPoints = (int)pack.Value;
                     break;
                 default:
                     Debug.LogWarning("bad package");
                     return false;
+            }
+        }
+        
+        if(army.Cost == 0)
+        {
+            factory = army.FactoryList[0];
+            countType0 = startCountUnit;
+        }
+
+
+        if (enemyArmy.Cost > army.Cost)
+        {
+            totalCount = enemyArmy.Cost - army.Cost;
+
+            if (buildPoints >= 5)
+            {
+                for (int i = 0; i < army.FactoryList.Count; i++)
+                {
+                    if (army.FactoryList[i].GetFactoryData.TypeId == 1)
+                    {
+                        factory = army.FactoryList[i];
+                        break;
+                    }
+                }
+                factory = army.FactoryList[0];
+
             }
         }
 
@@ -43,22 +83,25 @@ public class A_MakeUnit : AIAction
             Debug.Log("Factory not initialize");
             return false;
         }
-        else if(count == 0)
-        {
-            Debug.Log("count = 0");
-            return false;
-        }
-        else if (UnitType == -1)
-        {
-            Debug.Log("unitType bad value");
-            return false;
-        }
-
-
         
-        for(int i = 0; i < count; i++)
-            factory.RequestUnitBuild(UnitType);
-        
+        for(int i = 0; i < countType0; i++)
+            factory.RequestUnitBuild(0);
+
+        for (int i = 0; i < countType1; i++)
+            factory.RequestUnitBuild(1);
+
+        for (int i = 0; i < countType2; i++)
+            factory.RequestUnitBuild(2);
+
+        for (int i = 0; i < countType3; i++)
+            factory.RequestUnitBuild(3);
+
+        for (int i = 0; i < countType4; i++)
+            factory.RequestUnitBuild(4);
+
+        for (int i = 0; i < countType5; i++)
+            factory.RequestUnitBuild(5);
+
         return true;
     }
 
