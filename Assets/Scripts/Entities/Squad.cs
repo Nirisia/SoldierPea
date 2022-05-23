@@ -22,9 +22,9 @@ public class Squad
 
 	/*===== Accessor =====*/
 
-	public int Count => _group.Count;
-
-	public bool Moving => _moves;
+	public int		Count	=> _group.Count;
+	public bool		Moving	=> _moves;
+	public Vector3	Position => _currentPos;
 
 	/*====== Add/Remove =====*/
 
@@ -57,6 +57,16 @@ public class Squad
 
 	private void InitMoveData()
 	{
+		/* special case: a single unit in squad => no need to have the squad computation. */
+		if (_group.Count == 1)
+		{
+			_group[0].NavMeshAgent.SetDestination(_desiredPosition);
+			_group[0].NavMeshAgent.isStopped	= false;
+			_group[0].NavMeshAgent.autoBraking	= true;
+			_moves = true;
+			return;
+		}
+
 		/* we'll compute the mean, and the standard deviation for the squad speed */
 		float overrallSpeed		= 0.0f;
 		float overrallSpeedSqrd = 0.0f;
@@ -119,7 +129,7 @@ public class Squad
 
 	public void UpdateMovement()
 	{
-		if (_group.Count > 0 && _moves)
+		if (_group.Count > 1 && _moves)
 		{
 			ComputeUnitsMovement();
 		}

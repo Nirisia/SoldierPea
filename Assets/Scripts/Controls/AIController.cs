@@ -10,12 +10,19 @@ using UnityEngine;
 
 public sealed class AIController : UnitController
 {
-    
-    public Factory factory;
-    public AITactician _tactician;
-    #region MonoBehaviour methods
+	#region Members 
+	/*===== Members =====*/
 
-    protected override void Awake()
+	public AITactician			_tactician;
+	private Army				_enemyArmy		 = null;
+	private TargetBuilding[]	_targetBuildings = null;
+
+	#endregion
+
+	#region MonoBehaviour methods
+	/*===== MonoBehaviour methods =====*/
+
+	protected override void Awake()
     {
         base.Awake();
     }
@@ -23,20 +30,36 @@ public sealed class AIController : UnitController
     protected override void Start()
     {
         base.Start();
-        _army.AddFactory(factory);
-        
 
-    }
+		Army[] armies = FindObjectsOfType<Army>();
+
+		/* there is only two possible teams */
+		for (int i = 0; i < armies.Length; i++)
+			if (armies[i].Team != Team)
+			{
+				_enemyArmy = armies[i];
+				break;
+			}
+
+		_targetBuildings = GameServices.GetTargetBuildings();
+	}
 
     protected override void Update()
     {
+		//TODO: Update Priority (in SetTactic)
+
         base.Update();
         Data data = new Data();
         if(InitData(data))
             _tactician.ExecuteTactic(data);
     }
-    
-    public bool InitData(in Data data)
+
+	#endregion
+
+	#region Tactics methods
+	/*===== Tactics methods =====*/
+
+	public bool InitData(in Data data)
     {
         if (!_tactician.GetNextAction())
         {
@@ -44,7 +67,8 @@ public sealed class AIController : UnitController
             return false;
         }
 
-        
+        //TODO: Compute value for tactics and replace hard coded
+		//Do it in actions => give min data for compute.
         switch (_tactician.GetNextAction().AType)
         {
             case EActionType.MakeUnit:
@@ -58,7 +82,8 @@ public sealed class AIController : UnitController
                 break;
             
             case EActionType.Move:
-                _tactician.ChooseDestination(data, _army);
+				SetMoveData(data);
+				//_tactician.ChooseDestination(data, _army);
                 break;
             
             case EActionType.Build:
@@ -76,5 +101,12 @@ public sealed class AIController : UnitController
         return true;
     }
 
-    #endregion
+	private void SetMoveData(in Data data)
+	{
+		data.package.Add("OwnerArmy", _army);
+		data.package.Add("EnemyArmy", _enemyArmy);
+		data.package.Add("TargetBuildings", _targetBuildings);
+	}
+
+	#endregion
 }

@@ -39,7 +39,6 @@ public class AITactician : MonoBehaviour
     public List<AIAction> Actions = new List<AIAction>();
     
     public  List<AIAction> Tactic = new List<AIAction>();
-    private UtilitySystem US;
     
     private void Awake()
     {
@@ -48,8 +47,8 @@ public class AITactician : MonoBehaviour
 
     private void Start()
     {
-
     }
+
     public void SetTactic()
     {
         Tactic.Clear();

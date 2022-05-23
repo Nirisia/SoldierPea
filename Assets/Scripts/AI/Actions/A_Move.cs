@@ -8,50 +8,20 @@ using UnityEngine;
 public class A_Move : AIAction
 {
 
+	struct A_Move_Data
+	{
+		public Army				myArmy;
+		public Army				enemyArmy;
+		public TargetBuilding[]	targetBuilding;
+	}
+
     public override bool Execute(Data data)
     {
-        if (data.package.Count != 2)
-        {
-            Debug.Log("Bad Size of package");
-            return false;
-        }
-        
-        List<Vector3> pos = new List<Vector3>();
-        List<Squad> squads = new List<Squad>();
-        foreach (var pack in data.package)
-        {
-            switch (pack.Key)
-            {
-                case "Squad":
-                    squads = (List<Squad>)pack.Value;
-                    break;
-                
-                case "Pos":
-                    pos = (List<Vector3>)pack.Value;
-                    break;
-                
-                default:
-                    Debug.LogWarning("bad package");
-                    return false;
-            }
-        }
+		A_Move_Data moveData;
+		UnpackMoveData(out moveData, data);
 
-        if (pos.Count <= 0)
-        {
-            Debug.Log("position not valid");
-            return false;
-        }
-        else if (squads.Count <= 0)
-        {
-            Debug.Log("squad not set");
-            return false;
-        }
 
-        else if (squads.Count != pos.Count)
-        {
-            Debug.Log(" not match enter squad and pos");
-            return false;
-        }
+		
         
         for (int i = 0; i < squads.Count; i++)
         {
@@ -65,4 +35,36 @@ public class A_Move : AIAction
     {
         
     }
+
+	private bool UnpackMoveData(out A_Move_Data moveData_, Data abstractData_)
+	{
+		moveData_ = new A_Move_Data();
+		if (abstractData_.package.Count != 3)
+		{
+			Debug.Log("A_Move: bad package size");
+			return false;
+		}
+
+		foreach (var pack in abstractData_.package)
+		{
+			switch (pack.Key)
+			{
+				case "OwnerArmy":
+					moveData_.myArmy	= (Army)pack.Value;
+					break;
+
+				case "EnemyArmy":
+					moveData_.enemyArmy = (Army)pack.Value;
+					break;
+
+				case "TargetBuildings":
+					moveData_.targetBuilding = (TargetBuilding[])pack.Value;
+					break;
+				default:
+					Debug.LogWarning("bad package");
+					return false;
+			}
+		}
+	}
+
 }
