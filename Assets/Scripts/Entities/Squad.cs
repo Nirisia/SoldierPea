@@ -11,17 +11,49 @@ public class Squad
 {
 	/*===== Members =====*/
 
-	public List<Unit> _group	= new List<Unit>();
+	private List<Unit> _group	= new List<Unit>();
 
 	private Vector3	_desiredPosition	= Vector3.zero;
 	public	Vector3	_currentPos			= Vector3.zero;
 	private bool	_moves				= false;
 	private float	_radius				= 0.0f;
 
-	private List<float> _previousSpeeds = new List<float>();		 
+	private List<float> _previousSpeeds = new List<float>();
 
+	/*===== Accessor =====*/
+
+	public int Count => _group.Count;
+
+	public bool Moving => _moves;
+
+	/*====== Add/Remove =====*/
+
+	public void Add(Unit newUnit_)
+	{
+		ResetMoveData();
+		_group.Add(newUnit_);
+	}
+
+	public void Remove(Unit newUnit_)
+	{
+		ResetMoveData();
+		_group.Remove(newUnit_);
+	}
+
+	public void AddRangeGroup(List<Unit> newGroup_)
+	{
+		ResetMoveData();
+		_group.Clear();
+		_group.AddRange(newGroup_);
+	}
 
 	/*===== Init/Reset Methods =====*/
+
+	public void SetGroup(List<Unit> newGroup_)
+	{
+		ResetMoveData();
+		_group = newGroup_;
+	}
 
 	private void InitMoveData()
 	{
@@ -73,10 +105,14 @@ public class Squad
 		for (int i = 0; i < _group.Count; i++)
 		{
 			/* change values of unit  */
-			_group[i].NavMeshAgent.velocity		= Vector3.zero;
-			_group[i].NavMeshAgent.isStopped	= true;
-			_group[i].NavMeshAgent.autoBraking	= true;
+			_group[i].NavMeshAgent.velocity			 = Vector3.zero;
+			_group[i].NavMeshAgent.isStopped		 = true;
+			_group[i].NavMeshAgent.autoBraking		 = true;
+			if (_previousSpeeds.Count > i)
+				_group[i].NavMeshAgent.speed	= _previousSpeeds[i];
 		}
+
+		_previousSpeeds.Clear();
 	}
 
 	/*===== Update Methods =====*/

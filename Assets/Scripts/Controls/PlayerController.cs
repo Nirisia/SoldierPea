@@ -251,7 +251,6 @@ public sealed class PlayerController : UnitController
 	private void UnselectAllUnits()
 	{
 		_selectedUnits.Clear();
-		_army.SquadList[0]._group = _selectedUnits.List;
 	}
 
 	private void SelectAllUnits()
@@ -284,12 +283,13 @@ public sealed class PlayerController : UnitController
 	private void SelectUnit(Unit unit)
 	{
 		_selectedUnits.Add(unit);
+		_army.SquadList[0].Add(unit);
 	}
 
 	private void UnselectUnit(Unit unit)
 	{
 		_selectedUnits.Remove(unit);
-		_army.SquadList[0]._group = _selectedUnits.List;
+		_army.SquadList[0].Remove(unit);
 	}
 	/*=============== END Selection Methods ===============*/
 	#endregion
@@ -647,7 +647,7 @@ public sealed class PlayerController : UnitController
 			SetTargetCursorPosition(newPos);
 
 			// Direct call to moving task $$$ to be improved by AI behaviour
-			_army.SquadList[0]._group = _selectedUnits.List;
+			_army.SquadList[0].AddRangeGroup(_selectedUnits.List);
 			_army.SquadList[0].Move(newPos);
 		}
 	}
