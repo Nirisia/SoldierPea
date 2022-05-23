@@ -30,8 +30,8 @@ public class Squad
 
 	public void Add(Unit newUnit_)
 	{
-		ResetMoveData();
 		_group.Add(newUnit_);
+		ResetMoveData();
 	}
 
 	public void Remove(Unit newUnit_)
