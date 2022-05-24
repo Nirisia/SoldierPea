@@ -83,7 +83,7 @@ public class A_MakeSquad : AIAction
                 {
                     if (CountsList[i] > 0)
                     {
-                        squad._group.Add(unit);
+                        squad.Add(unit);
                         CountsList[i]--;
                     }
                     
@@ -99,7 +99,7 @@ public class A_MakeSquad : AIAction
                 break;
         }
         
-        if (squad._group.Count <= 0)
+        if (squad.Count <= 0)
         {
             Debug.Log("No unit add squad ");
             return false;
@@ -107,7 +107,7 @@ public class A_MakeSquad : AIAction
 
         army.AddSquad(squad);
         Squad test = new Squad();
-        test._group.Add(army.UnitList[4]);
+        test.Add(army.UnitList[4]);
         army.AddSquad(test);
         Debug.Log("army:" + army.SquadList.Count);
 

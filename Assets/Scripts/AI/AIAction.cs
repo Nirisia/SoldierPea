@@ -12,7 +12,7 @@ using UnityEngine;
 
 public abstract class AIAction : ScriptableObject
 {
-    [Range(0,1)]
+    [Range(0,1), SerializeField]
     protected float _priority = 0;
 
     public float Priority => _priority;

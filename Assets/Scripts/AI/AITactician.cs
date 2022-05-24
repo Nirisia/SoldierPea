@@ -34,7 +34,12 @@ public class AITactician : MonoBehaviour
     
 
     [Range(0,1)]
-    float Personality = 0.5f;
+    float _personality = 0.5f;
+    
+    public float Personality => _personality;
+
+    [SerializeField] private float MinimumValue = 0.1f; 
+    
     
     public List<AIAction> Actions = new List<AIAction>();
     
@@ -43,7 +48,6 @@ public class AITactician : MonoBehaviour
     
     private void Awake()
     {
-        SetTactic();
     }
 
     private void Start()
@@ -53,17 +57,36 @@ public class AITactician : MonoBehaviour
     public void SetTactic()
     {
         Tactic.Clear();
-        Tactic.Add(SelectAction(EActionType.MakeUnit));
 
-        Tactic.Add(SelectAction(EActionType.Build));
-
-        Tactic.Add(SelectAction(EActionType.MakeSquad));
-
-        Tactic.Add(SelectAction(EActionType.Move));
-
+        foreach (var action in Actions)
+        {
+            //action.UpdatePriority(data);
+            
+            if (action.Priority >= MinimumValue)
+            {
+                if(Tactic.Count == 0)
+                    Tactic.Add(action);
+                else
+                    SortAction(action);
+            }
+            
+        }
 
     }
 
+    void SortAction(AIAction action)
+    {
+        for (int i = 0; i < Tactic.Count; i++)
+        {
+            if (Tactic[i].Priority < action.Priority)
+            {
+                Tactic.Insert(i, action);
+                return;
+            }
+
+        }
+        Tactic.Add(action);
+    }
     AIAction SelectAction(EActionType type)
     {
         foreach (var action in Actions)
@@ -121,20 +144,41 @@ public class AITactician : MonoBehaviour
         data.package.Add("CountsList", countsList);
 
     }
-    
+
+    private bool test = true;
     public void ChooseDestination(in Data data, Army army)
     {
+        if(test )
+        {
+            List<Vector3> Pos = new List<Vector3>();
+            Pos.Add(new Vector3(50,0,70));
+            Pos.Add(new Vector3(0,0,70));
         
-        List<Vector3> Pos = new List<Vector3>();
-        Pos.Add(new Vector3(50,0,70));
-        Pos.Add(new Vector3(0,0,70));
+            List<Squad> squads = new List<Squad>();
         
-        List<Squad> squads = new List<Squad>();
+            squads.Add(army.SquadList[0]);
+            squads.Add(army.SquadList[1]);
+            data.package.Add("Squad", squads);
+            data.package.Add("Pos", Pos);
+
+            test = false;
+        }
+
+        else
+        {
+            List<Vector3> Pos = new List<Vector3>();
+            Pos.Add(new Vector3(-50,0,-70));
+            Pos.Add(new Vector3(0,0,-70));
         
-        squads.Add(army.SquadList[0]);
-        squads.Add(army.SquadList[1]);
-        data.package.Add("Squad", squads);
-        data.package.Add("Pos", Pos);
+            List<Squad> squads = new List<Squad>();
+        
+            squads.Add(army.SquadList[0]);
+            squads.Add(army.SquadList[1]);
+            data.package.Add("Squad", squads);
+            data.package.Add("Pos", Pos);
+
+        }
+
         
         
     }
