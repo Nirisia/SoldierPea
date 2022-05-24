@@ -30,6 +30,9 @@ public sealed class AIController : UnitController
     protected override void Start()
     {
         base.Start();
+        _tactician.SetTactic();
+        _army.AddFactory(factory);
+        
 
 		Army[] armies = FindObjectsOfType<Army>();
 
