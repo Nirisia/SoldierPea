@@ -104,6 +104,12 @@ public class Army : MonoBehaviour
 	{
 		for (int i = 0; i < _squadList.Count; i++)
 		{
+			if (_squadList[i].Count <= 0)
+			{
+				_squadList.Remove(_squadList[i--]);
+				continue;
+			}
+
 			_squadList[i].UpdateMovement();
 		}
 	}

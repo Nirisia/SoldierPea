@@ -4,7 +4,6 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "Move", menuName = "Actions/Move")]
-
 public class A_Move : AIAction
 {
 
@@ -21,17 +20,23 @@ public class A_Move : AIAction
 		UnpackMoveData(out moveData, data);
 
 
-		
-        
-        for (int i = 0; i < squads.Count; i++)
+		for (int i = 0; i < moveData.myArmy.SquadList.Count; i++)
         {
-            squads[i].Move(pos[i]);
+			//moveData.myArmy.SquadList[i].Move(pos[i]);
         }
         
         return true;
     }
 
-    public override void UpdatePriority(Data data)
+	struct A_MovePriority_Data
+	{
+		public Army myArmy;
+		public Army enemyArmy;
+		public TargetBuilding[] targetBuilding;
+		public int myBuildPoint;
+	}
+
+	public override void UpdatePriority(Data data)
     {
         
     }

@@ -30,9 +30,10 @@ public sealed class AIController : UnitController
     protected override void Start()
     {
         base.Start();
-        _tactician.SetTactic();
-        _army.AddFactory(factory);
-        
+
+		Dictionary<EActionType, Data> datas = InitSortData();
+
+        _tactician.SetTactic(datas);    
 
 		Army[] armies = FindObjectsOfType<Army>();
 
@@ -47,13 +48,26 @@ public sealed class AIController : UnitController
 		_targetBuildings = GameServices.GetTargetBuildings();
 	}
 
+	private Dictionary<EActionType, Data> InitSortData()
+	{
+		Dictionary<EActionType, Data> toReturn = new Dictionary<EActionType, Data>();
+
+
+		for (EActionType type = EActionType.None; type < EActionType.Count; type++)
+		{
+			toReturn.Add(type, InitPriorityData(type));
+		}
+
+		return toReturn;
+	}
+
     protected override void Update()
     {
 		//TODO: Update Priority (in SetTactic)
 
         base.Update();
         Data data = new Data();
-        if(InitData(data))
+        if(InitExecData(data))
             _tactician.ExecuteTactic(data);
     }
 
@@ -62,7 +76,7 @@ public sealed class AIController : UnitController
 	#region Tactics methods
 	/*===== Tactics methods =====*/
 
-	public bool InitData(in Data data)
+	public bool InitExecData(in Data data)
     {
         if (!_tactician.GetNextAction())
         {
@@ -103,6 +117,41 @@ public sealed class AIController : UnitController
 
         return true;
     }
+
+	public Data InitPriorityData(EActionType type)
+	{
+		Data data = new Data();
+		switch (type)
+		{
+			case EActionType.MakeUnit:
+				data.package.Add("Factory", _army.FactoryList[0]);
+				_tactician.ChooseTypeAndCountUnit(data);
+				break;
+
+			case EActionType.MakeSquad:
+				data.package.Add("Army", _army);
+				_tactician.CreateSquad(data, _army);
+				break;
+
+			case EActionType.Move:
+				SetMoveData(data);
+				//_tactician.ChooseDestination(data, _army);
+				break;
+
+			case EActionType.Build:
+				Func<int, Vector3, bool> request = RequestFactoryBuild;
+				_selectedFactory = _army.FactoryList[0];
+				data.package.Add("Factory", _army.FactoryList[0]);
+
+				data.package.Add("Request", request);
+
+				_tactician.ChooseTypeAndPosFactory(data);
+
+				break;
+		}
+
+		return data;
+	}
 
 	private void SetMoveData(in Data data)
 	{

@@ -8,12 +8,13 @@ using UnityEngine;
 
 public enum EActionType
 {
-    MakeUnit,
+	None,
+	MakeUnit,
     MakeSquad,
     Build,
     Move,
     
-    None
+	Count
 }
 
 public class Data
@@ -53,13 +54,13 @@ public class AITactician : MonoBehaviour
     {
     }
 
-    public void SetTactic()
+    public void SetTactic(Dictionary<EActionType,Data> datas)
     {
         Tactic.Clear();
 
         foreach (var action in Actions)
         {
-            //action.UpdatePriority(data);
+			action.UpdatePriority(datas[action.AType]);
             
             if (action.Priority >= MinimumValue)
             {

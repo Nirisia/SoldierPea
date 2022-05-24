@@ -1,7 +1,6 @@
-using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using System.Threading.Tasks;
 
 /* a class that represents a group. 
@@ -26,34 +25,44 @@ public class Squad
 	public bool		Moving	=> _moves;
 	public Vector3	Position => _currentPos;
 
+	public void UpdatePosition()
+	{
+		for (int i = 0; i < _group.Count; i++)
+		{
+			_currentPos += _group[i].transform.position;
+		}
+
+		_currentPos /= _group.Count;
+	}
+
 	/*====== Add/Remove =====*/
 
 	public void Add(Unit newUnit_)
 	{
+		newUnit_.OnChangeSquadEvent?.Invoke();
+		newUnit_.OnChangeSquadEvent += () => { _group.Remove(newUnit_); };
+		newUnit_.OnDeadEvent += () => { _group.Remove(newUnit_); };
 		_group.Add(newUnit_);
 		ResetMoveData();
 	}
 
-	public void Remove(Unit newUnit_)
+	public void Remove(Unit oldUnit_)
 	{
 		ResetMoveData();
-		_group.Remove(newUnit_);
+		_group.Remove(oldUnit_);
 	}
 
 	public void AddRangeGroup(List<Unit> newGroup_)
 	{
+		newGroup_.ForEach(unit => unit.OnChangeSquadEvent?.Invoke());
 		ResetMoveData();
 		_group.Clear();
 		_group.AddRange(newGroup_);
+		newGroup_.ForEach(unit => unit.OnChangeSquadEvent += () => { _group.Remove(unit); }); 
+		newGroup_.ForEach(unit => unit.OnDeadEvent += () => { _group.Remove(unit); });
 	}
 
 	/*===== Init/Reset Methods =====*/
-
-	public void SetGroup(List<Unit> newGroup_)
-	{
-		ResetMoveData();
-		_group = newGroup_;
-	}
 
 	private void InitMoveData()
 	{
@@ -115,9 +124,9 @@ public class Squad
 		for (int i = 0; i < _group.Count; i++)
 		{
 			/* change values of unit  */
-			_group[i].NavMeshAgent.velocity			 = Vector3.zero;
-			_group[i].NavMeshAgent.isStopped		 = true;
-			_group[i].NavMeshAgent.autoBraking		 = true;
+			_group[i].NavMeshAgent.velocity		= Vector3.zero;
+			_group[i].NavMeshAgent.isStopped	= true;
+			_group[i].NavMeshAgent.autoBraking	= true;
 			if (_previousSpeeds.Count > i)
 				_group[i].NavMeshAgent.speed	= _previousSpeeds[i];
 		}
