@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46e2985979a44b544aa44264d8963722, type: 3}
   m_Name: MakeSquad
   m_EditorClassIdentifier: 
+  _priority: 0.3
   AType: 1
