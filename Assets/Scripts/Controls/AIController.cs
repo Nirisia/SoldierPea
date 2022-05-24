@@ -31,9 +31,9 @@ public sealed class AIController : UnitController
     {
         base.Start();
 
-		Dictionary<EActionType, Data> datas = InitSortData();
+		Data data = InitSortData();
 
-        _tactician.SetTactic(datas);    
+        _tactician.SetTactic(data);    
 
 		Army[] armies = FindObjectsOfType<Army>();
 
@@ -48,15 +48,15 @@ public sealed class AIController : UnitController
 		_targetBuildings = GameServices.GetTargetBuildings();
 	}
 
-	private Dictionary<EActionType, Data> InitSortData()
+	private Data InitSortData()
 	{
-		Dictionary<EActionType, Data> toReturn = new Dictionary<EActionType, Data>();
+		Data toReturn = new Data();
 
+		toReturn.package.Add("OwnerArmy", _army);
+		toReturn.package.Add("EnemyArmy", _enemyArmy);
+		toReturn.package.Add("TargetBuildings", _targetBuildings);
+		toReturn.package.Add("OwnerBuildPoint", _TotalBuildPoints);
 
-		for (EActionType type = EActionType.None; type < EActionType.Count; type++)
-		{
-			toReturn.Add(type, InitPriorityData(type));
-		}
 
 		return toReturn;
 	}
