@@ -16,6 +16,8 @@ public class Army : MonoBehaviour
 
 	private int _capturedTargets = 0;
 
+	private int _cost = 0;
+
 	/* lists */
 	private	List<Unit>		_unitList	 = new List<Unit>();
 	private	List<Squad>		_squadList	 = new List<Squad>();
@@ -32,6 +34,8 @@ public class Army : MonoBehaviour
 	public List<Unit> UnitList		=> _unitList;
 	public List<Factory> FactoryList => _factoryList;
 	public List<Squad> SquadList => _squadList;
+
+	public int Cost => _cost;
 
 	private void OnDrawGizmos()
 	{
@@ -63,8 +67,10 @@ public class Army : MonoBehaviour
 		unit.OnDeadEvent += () =>
 		{
 			_unitList.Remove(unit);
+			_cost -= unit.Cost;
 		};
 		_unitList.Add(unit);
+		_cost += unit.Cost;
 	}
 
 	virtual public void AddSquad(Squad squad)

@@ -89,8 +89,19 @@ public sealed class AIController : UnitController
         switch (_tactician.GetNextAction().AType)
         {
             case EActionType.MakeUnit:
-                data.package.Add("Factory", _army.FactoryList[0]);
-                _tactician.ChooseTypeAndCountUnit(data);
+                Army[] armies = FindObjectsOfType<Army>();
+                for (int i = 0; i < armies.Length; i++)
+                {
+                    if (armies[i].Team != Team)
+                    {
+                        data.package.Add("EnemyArmy", armies[i]);
+                        break;
+                    }
+                }    
+                data.package.Add("Army", _army);
+                data.package.Add("BuildPoints", TotalBuildPoints);
+                
+               // _tactician.ChooseTypeAndCountUnit(data);
                 break;
             
             case EActionType.MakeSquad:

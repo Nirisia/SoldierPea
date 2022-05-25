@@ -14,9 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TypeId: 5
   Caption: Heavy Tank B
-  Cost: 5
+  Cost: 6
   BuildDuration: 15
   MaxHP: 200
+  SquadAlignement: 0.5
+  SquadCohesion: 0.5
+  SquadSeparation: 0.5
+  SquadSeparationDist: 5
+  UnitViewAngle: 45
+  UnitRangeOfSight: 100
   DPS: 60
   AttackFrequency: 2
   AttackDistanceMax: 40
