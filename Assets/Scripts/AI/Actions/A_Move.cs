@@ -39,7 +39,7 @@ public class A_Move : AIAction
 		{
 			switch (pack.Key)
 			{
-				case "OwnerArmy":
+				case "Army":
 					moveData_.myArmy = (Army)pack.Value;
 					break;
 
@@ -51,7 +51,7 @@ public class A_Move : AIAction
 					moveData_.targetBuilding = (TargetBuilding[])pack.Value;
 					break;
 
-				case "OwnerBuildPoint":
+				case "OwnerBuildPoints":
 					moveData_.myBuildPoint = (int)pack.Value;
 					break;
 
@@ -71,9 +71,9 @@ public class A_Move : AIAction
 			Debug.Log("A_Move: Other Controller Army not init");
 			return false;
 		}
-		else if (moveData_.enemyArmy == null)
+		else if (moveData_.targetBuilding == null)
 		{
-			Debug.Log("A_Move: Other Controller Army not init");
+			Debug.Log("A_Move: Target Buildings not init");
 			return false;
 		}
 

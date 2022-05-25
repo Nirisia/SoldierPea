@@ -52,10 +52,10 @@ public sealed class AIController : UnitController
 	{
 		Data toReturn = new Data();
 
-		toReturn.package.Add("OwnerArmy", _army);
+		toReturn.package.Add("Army", _army);
 		toReturn.package.Add("EnemyArmy", _enemyArmy);
 		toReturn.package.Add("TargetBuildings", _targetBuildings);
-		toReturn.package.Add("OwnerBuildPoint", _TotalBuildPoints);
+		toReturn.package.Add("OwnerBuildPoints", _TotalBuildPoints);
 
 
 		return toReturn;
@@ -89,20 +89,8 @@ public sealed class AIController : UnitController
         switch (_tactician.GetNextAction().AType)
         {
             case EActionType.MakeUnit:
-                Army[] armies = FindObjectsOfType<Army>();
-                for (int i = 0; i < armies.Length; i++)
-                {
-                    if (armies[i].Team != Team)
-                    {
-                        data.package.Add("EnemyArmy", armies[i]);
-                        break;
-                    }
-                }    
-                data.package.Add("Army", _army);
-                data.package.Add("BuildPoints", TotalBuildPoints);
-                
-               // _tactician.ChooseTypeAndCountUnit(data);
-                break;
+				SetMakeUnitData(data);
+				break;
             
             case EActionType.MakeSquad:
                 data.package.Add("Army", _army);
@@ -111,7 +99,6 @@ public sealed class AIController : UnitController
             
             case EActionType.Move:
 				SetMoveData(data);
-				//_tactician.ChooseDestination(data, _army);
                 break;
             
             case EActionType.Build:
@@ -129,47 +116,19 @@ public sealed class AIController : UnitController
         return true;
     }
 
-	public Data InitPriorityData(EActionType type)
+	private void SetMakeUnitData(in Data data)
 	{
-		Data data = new Data();
-		switch (type)
-		{
-			case EActionType.MakeUnit:
-				data.package.Add("Factory", _army.FactoryList[0]);
-				_tactician.ChooseTypeAndCountUnit(data);
-				break;
-
-			case EActionType.MakeSquad:
-				data.package.Add("Army", _army);
-				_tactician.CreateSquad(data, _army);
-				break;
-
-			case EActionType.Move:
-				SetMoveData(data);
-				//_tactician.ChooseDestination(data, _army);
-				break;
-
-			case EActionType.Build:
-				Func<int, Vector3, bool> request = RequestFactoryBuild;
-				_selectedFactory = _army.FactoryList[0];
-				data.package.Add("Factory", _army.FactoryList[0]);
-
-				data.package.Add("Request", request);
-
-				_tactician.ChooseTypeAndPosFactory(data);
-
-				break;
-		}
-
-		return data;
+		data.package.Add("Army", _army);
+		data.package.Add("EnemyArmy", _enemyArmy);
+		data.package.Add("OwnerBuildPoints", _TotalBuildPoints);
 	}
 
 	private void SetMoveData(in Data data)
 	{
-		data.package.Add("OwnerArmy", _army);
+		data.package.Add("Army", _army);
 		data.package.Add("EnemyArmy", _enemyArmy);
 		data.package.Add("TargetBuildings", _targetBuildings);
-		data.package.Add("OwnerBuildPoint", _TotalBuildPoints);
+		data.package.Add("OwnerBuildPoints", _TotalBuildPoints);
 	}
 
 	#endregion

@@ -12,7 +12,7 @@ public class Army : MonoBehaviour
 
 	/*====== Members ======*/
 
-	public UnitController _owner = null;
+	[HideInInspector] public UnitController _owner = null;
 
 	private int _capturedTargets = 0;
 
@@ -96,8 +96,9 @@ public class Army : MonoBehaviour
 	}
 
 	// Start is called before the first frame update
-	void Start()
+	void Awake()
 	{
+		GetTeamExistingFactory();
 	}
 
 	// Update is called once per frame
