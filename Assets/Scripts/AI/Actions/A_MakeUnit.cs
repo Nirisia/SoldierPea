@@ -15,15 +15,9 @@ public class A_MakeUnit : AIAction
             return false;
         }
 
-        int countType0 = 0;
-        int countType1 = 0;
-        int countType2 = 0;
-        int countType3 = 0;
-        int countType4 = 0;
-        int countType5 = 0;
+        int[] typeCounts = new int[6];
 
         int totalCount = 0;
-
 
         Factory factory = new Factory();
 
@@ -55,15 +49,15 @@ public class A_MakeUnit : AIAction
         if(army.Cost == 0)
         {
             factory = army.FactoryList[0];
-            countType0 = startCountUnit;
+            typeCounts[0] = startCountUnit;
         }
 
 
         if (enemyArmy.Cost > army.Cost)
         {
-            totalCount = enemyArmy.Cost - army.Cost;
+            totalCount = Mathf.Min(enemyArmy.Cost - army.Cost, buildPoints);
 
-            if (buildPoints >= 5)
+            if (totalCount >= 5)
             {
                 for (int i = 0; i < army.FactoryList.Count; i++)
                 {
@@ -72,9 +66,42 @@ public class A_MakeUnit : AIAction
                         factory = army.FactoryList[i];
                         break;
                     }
+                    else
+                    {
+                        factory = army.FactoryList[0];
+                    }
                 }
-                factory = army.FactoryList[0];
 
+                if (factory.GetFactoryData.TypeId == 1)
+                {
+                    for (int c = 5; c >= 3; c--)
+                    {
+                        typeCounts[c] = totalCount / (c + 1);
+                        totalCount %= (c + 1);
+                    }
+                }
+                else
+                {
+                    for (int c = 2; c >= 0; c--)
+                    {
+                        typeCounts[c] = totalCount / (c + 1);
+                        totalCount %= (c + 1);
+                    }
+                }
+            }
+            else if (totalCount > 0)
+            {
+                factory = army.FactoryList[0];
+                for (int c = 2; c >= 0; c--)
+                {
+                    typeCounts[c] = totalCount / (c + 1);
+                    totalCount %= (c + 1);
+                }
+            }
+            else
+            {
+                Debug.Log("No construction points");
+                return false;
             }
         }
 
@@ -84,24 +111,11 @@ public class A_MakeUnit : AIAction
             return false;
         }
         
-        for(int i = 0; i < countType0; i++)
-            factory.RequestUnitBuild(0);
-
-        for (int i = 0; i < countType1; i++)
-            factory.RequestUnitBuild(1);
-
-        for (int i = 0; i < countType2; i++)
-            factory.RequestUnitBuild(2);
-
-        for (int i = 0; i < countType3; i++)
-            factory.RequestUnitBuild(3);
-
-        for (int i = 0; i < countType4; i++)
-            factory.RequestUnitBuild(4);
-
-        for (int i = 0; i < countType5; i++)
-            factory.RequestUnitBuild(5);
-
+        for(int i = 0; i < typeCounts.Length; i++)
+        {
+            factory.RequestUnitBuild(i+1);
+        }
+           
         return true;
     }
 

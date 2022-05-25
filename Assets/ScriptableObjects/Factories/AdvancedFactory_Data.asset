@@ -12,11 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33438ee65fe702c40a35a4dc7d603393, type: 3}
   m_Name: AdvancedFactory_Data
   m_EditorClassIdentifier: 
-  TypeId: 0
+  TypeId: 1
   Caption: Heavy Factory
   Cost: 15
   BuildDuration: 30
   MaxHP: 10000
+  SquadAlignement: 0.5
+  SquadCohesion: 0.5
+  SquadSeparation: 0.5
+  SquadSeparationDist: 5
+  UnitViewAngle: 45
+  UnitRangeOfSight: 100
   NbSpawnSlots: 10
   SpawnRadius: 12
   RadiusOffset: 4
