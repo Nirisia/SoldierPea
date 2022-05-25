@@ -35,6 +35,18 @@ public class Squad
 		_currentPos /= _group.Count;
 	}
 
+	public int GetCost()
+	{
+		int cost = 0;
+
+		for (int i = 0; i < _group.Count; i++)
+		{
+			cost += _group[i].GetUnitData.Cost;
+		}
+
+		return cost;
+	}
+
 	/*====== Add/Remove =====*/
 
 	public void Add(Unit newUnit_)

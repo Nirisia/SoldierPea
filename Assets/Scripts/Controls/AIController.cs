@@ -31,10 +31,6 @@ public sealed class AIController : UnitController
     {
         base.Start();
 
-		Data data = InitSortData();
-
-        _tactician.SetTactic(data);    
-
 		Army[] armies = FindObjectsOfType<Army>();
 
 		/* there is only two possible teams */
@@ -46,6 +42,10 @@ public sealed class AIController : UnitController
 			}
 
 		_targetBuildings = GameServices.GetTargetBuildings();
+
+		Data data = InitSortData();
+
+        _tactician.SetTactic(data);
 	}
 
 	private Data InitSortData()
@@ -158,6 +158,7 @@ public sealed class AIController : UnitController
 		data.package.Add("OwnerArmy", _army);
 		data.package.Add("EnemyArmy", _enemyArmy);
 		data.package.Add("TargetBuildings", _targetBuildings);
+		data.package.Add("OwnerBuildPoint", _TotalBuildPoints);
 	}
 
 	#endregion
