@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.AI;
+
 public class Unit : BaseEntity
 {
     [SerializeField]
@@ -38,6 +40,10 @@ public class Unit : BaseEntity
 
         Destroy(gameObject);
     }
+
+	/* Events */
+	public Action OnChangeSquadEvent;
+
     #region MonoBehaviour methods
     override protected void Awake()
     {

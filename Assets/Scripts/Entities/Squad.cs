@@ -1,7 +1,6 @@
-using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using System.Threading.Tasks;
 
 /* a class that represents a group. 
@@ -22,41 +21,73 @@ public class Squad
 
 	/*===== Accessor =====*/
 
-	public int Count => _group.Count;
+	public int		Count	=> _group.Count;
+	public bool		Moving	=> _moves;
+	public Vector3	Position => _currentPos;
 
-	public bool Moving => _moves;
+	public void UpdatePosition()
+	{
+		for (int i = 0; i < _group.Count; i++)
+		{
+			_currentPos += _group[i].transform.position;
+		}
+
+		_currentPos /= _group.Count;
+	}
+
+	public int GetCost()
+	{
+		int cost = 0;
+
+		for (int i = 0; i < _group.Count; i++)
+		{
+			cost += _group[i].GetUnitData.Cost;
+		}
+
+		return cost;
+	}
 
 	/*====== Add/Remove =====*/
 
 	public void Add(Unit newUnit_)
 	{
+		newUnit_.OnChangeSquadEvent?.Invoke();
+		newUnit_.OnChangeSquadEvent += () => { _group.Remove(newUnit_); };
+		newUnit_.OnDeadEvent += () => { _group.Remove(newUnit_); };
 		_group.Add(newUnit_);
 		ResetMoveData();
 	}
 
-	public void Remove(Unit newUnit_)
+	public void Remove(Unit oldUnit_)
 	{
 		ResetMoveData();
-		_group.Remove(newUnit_);
+		_group.Remove(oldUnit_);
 	}
 
 	public void AddRangeGroup(List<Unit> newGroup_)
 	{
+		newGroup_.ForEach(unit => unit.OnChangeSquadEvent?.Invoke());
 		ResetMoveData();
 		_group.Clear();
 		_group.AddRange(newGroup_);
+		newGroup_.ForEach(unit => unit.OnChangeSquadEvent += () => { _group.Remove(unit); }); 
+		newGroup_.ForEach(unit => unit.OnDeadEvent += () => { _group.Remove(unit); });
 	}
 
 	/*===== Init/Reset Methods =====*/
 
-	public void SetGroup(List<Unit> newGroup_)
-	{
-		ResetMoveData();
-		_group = newGroup_;
-	}
-
 	private void InitMoveData()
 	{
+		/* special case: a single unit in squad => no need to have the squad computation. */
+		if (_group.Count == 1)
+		{
+			_group[0].NavMeshAgent.SetDestination(_desiredPosition);
+			_group[0].NavMeshAgent.isStopped	= false;
+			_group[0].NavMeshAgent.autoBraking	= true;
+			_moves = true;
+			return;
+		}
+
 		/* we'll compute the mean, and the standard deviation for the squad speed */
 		float overrallSpeed		= 0.0f;
 		float overrallSpeedSqrd = 0.0f;
@@ -105,9 +136,9 @@ public class Squad
 		for (int i = 0; i < _group.Count; i++)
 		{
 			/* change values of unit  */
-			_group[i].NavMeshAgent.velocity			 = Vector3.zero;
-			_group[i].NavMeshAgent.isStopped		 = true;
-			_group[i].NavMeshAgent.autoBraking		 = true;
+			_group[i].NavMeshAgent.velocity		= Vector3.zero;
+			_group[i].NavMeshAgent.isStopped	= true;
+			_group[i].NavMeshAgent.autoBraking	= true;
 			if (_previousSpeeds.Count > i)
 				_group[i].NavMeshAgent.speed	= _previousSpeeds[i];
 		}
@@ -119,7 +150,7 @@ public class Squad
 
 	public void UpdateMovement()
 	{
-		if (_group.Count > 0 && _moves)
+		if (_group.Count > 1 && _moves)
 		{
 			ComputeUnitsMovement();
 		}

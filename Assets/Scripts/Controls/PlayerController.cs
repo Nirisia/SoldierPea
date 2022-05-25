@@ -52,6 +52,7 @@ public sealed class PlayerController : UnitController
 	GameObject		TargetCursor			= null;
 
 	private SelectableList<Unit>	_selectedUnits		= new SelectableList<Unit>();
+	private Squad _selectedSquad = null;
 
 	/* Factory build */
 	InputMode	CurrentInputMode		= InputMode.Orders;
@@ -119,6 +120,17 @@ public sealed class PlayerController : UnitController
 		PlayerMenuController.HideAllFactoryBuildQueue();
 	}
 
+	private Squad GetSelectSquad()
+	{
+		if (_selectedSquad == null)
+		{
+			_selectedSquad = new Squad();
+			_army.AddSquad(_selectedSquad);
+		}
+
+		return _selectedSquad;
+	}
+
 	/*===== END Getter/Setter =====*/
 	#endregion
 
@@ -152,9 +164,6 @@ public sealed class PlayerController : UnitController
 
 		/* Set up the new Pointer Event */
 		MenuPointerEventData = new PointerEventData(SceneEventSystem);
-
-		Squad selectSquad = new Squad();
-		_army.AddSquad(selectSquad);
 	}
 
 	override protected void Start()
@@ -248,15 +257,19 @@ public sealed class PlayerController : UnitController
 	#region Unit Selection methods
 	/*=============== Unit Selection Methods ===============*/
 
+
+
 	private void UnselectAllUnits()
 	{
 		_selectedUnits.Clear();
+		_selectedSquad = null;
 	}
 
 	private void SelectAllUnits()
 	{
 		_selectedUnits.Clear();
 		_selectedUnits.AddRange(_army.UnitList);
+		GetSelectSquad().AddRangeGroup(_selectedUnits.List);
 	}
 
 	private void SelectAllUnitsByTypeId(int typeId)
@@ -268,28 +281,22 @@ public sealed class PlayerController : UnitController
 			return unit.GetTypeId == typeId;
 		}
 		);
-	}
 
-	private void SelectUnitList(List<Unit> units)
-	{
-		_selectedUnits.AddRange(units);
-	}
-
-	private void SelectUnitList(Unit[] units)
-	{
-		_selectedUnits.AddRange(units);
+		_selectedSquad = new Squad();
+		_army.AddSquad(_selectedSquad);
+		GetSelectSquad().AddRangeGroup(_selectedUnits.List);
 	}
 
 	private void SelectUnit(Unit unit)
 	{
 		_selectedUnits.Add(unit);
-		_army.SquadList[0].Add(unit);
+		GetSelectSquad().Add(unit);
 	}
 
 	private void UnselectUnit(Unit unit)
 	{
 		_selectedUnits.Remove(unit);
-		_army.SquadList[0].Remove(unit);
+		GetSelectSquad().Remove(unit);
 	}
 	/*=============== END Selection Methods ===============*/
 	#endregion
@@ -647,8 +654,8 @@ public sealed class PlayerController : UnitController
 			SetTargetCursorPosition(newPos);
 
 			// Direct call to moving task $$$ to be improved by AI behaviour
-			_army.SquadList[0].AddRangeGroup(_selectedUnits.List);
-			_army.SquadList[0].Move(newPos);
+			GetSelectSquad().AddRangeGroup(_selectedUnits.List);
+			GetSelectSquad().Move(newPos);
 		}
 	}
 	#endregion

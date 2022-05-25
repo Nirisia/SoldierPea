@@ -4,65 +4,203 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "Move", menuName = "Actions/Move")]
-
 public class A_Move : AIAction
 {
 
-    public override bool Execute(Data data)
+	#region Serialized Field
+	/*===== Serialized Field =====*/
+
+	[SerializeField, Range(0.0f, 1.0f)] private float squadAttackWeight = 0.3f;
+	[SerializeField, Range(0.0f, 1.0f)] private float attackFactoryWeight = 0.3f;
+	[SerializeField, Range(0.0f, 1.0f)] private float captureBuildingWeight = 0.3f;
+
+	[SerializeField] private float movementRange = 100.0f;
+	[SerializeField,Min(0)] private int captureUnWantedBuildPoint = 10;
+	[SerializeField,Min(1)] private int minUnitInSquad = 3;
+
+	#endregion
+
+	#region Data
+	/*====== Data ======*/
+
+	struct A_Move_Data
+	{
+		public Army myArmy;
+		public Army enemyArmy;
+		public TargetBuilding[] targetBuilding;
+		public int myBuildPoint;
+	}
+
+	private bool UnpackMoveData(out A_Move_Data moveData_, Data abstractData_)
+	{
+		moveData_ = new A_Move_Data();
+
+		foreach (var pack in abstractData_.package)
+		{
+			switch (pack.Key)
+			{
+				case "OwnerArmy":
+					moveData_.myArmy = (Army)pack.Value;
+					break;
+
+				case "EnemyArmy":
+					moveData_.enemyArmy = (Army)pack.Value;
+					break;
+
+				case "TargetBuildings":
+					moveData_.targetBuilding = (TargetBuilding[])pack.Value;
+					break;
+
+				case "OwnerBuildPoint":
+					moveData_.myBuildPoint = (int)pack.Value;
+					break;
+
+				default:
+					Debug.LogWarning("bad package");
+					return false;
+			}
+		}
+
+		if (moveData_.myArmy == null)
+		{
+			Debug.Log("A_Move: AIController Army not init");
+			return false;
+		}
+		else if (moveData_.enemyArmy == null)
+		{
+			Debug.Log("A_Move: Other Controller Army not init");
+			return false;
+		}
+		else if (moveData_.enemyArmy == null)
+		{
+			Debug.Log("A_Move: Other Controller Army not init");
+			return false;
+		}
+
+		return true;
+	}
+
+	#endregion
+
+	#region Execution
+	/*====== Execution ======*/
+
+	public override bool Execute(Data data)
     {
-        if (data.package.Count != 2)
-        {
-            Debug.Log("Bad Size of package");
-            return false;
-        }
-        
-        List<Vector3> pos = new List<Vector3>();
-        List<Squad> squads = new List<Squad>();
-        foreach (var pack in data.package)
-        {
-            switch (pack.Key)
-            {
-                case "Squad":
-                    squads = (List<Squad>)pack.Value;
-                    break;
-                
-                case "Pos":
-                    pos = (List<Vector3>)pack.Value;
-                    break;
-                
-                default:
-                    Debug.LogWarning("bad package");
-                    return false;
-            }
-        }
+		A_Move_Data moveData;
+		UnpackMoveData(out moveData, data);
 
-        if (pos.Count <= 0)
-        {
-            Debug.Log("position not valid");
-            return false;
-        }
-        else if (squads.Count <= 0)
-        {
-            Debug.Log("squad not set");
-            return false;
-        }
 
-        else if (squads.Count != pos.Count)
+		for (int i = 0; i < moveData.myArmy.SquadList.Count; i++)
         {
-            Debug.Log(" not match enter squad and pos");
-            return false;
-        }
-        
-        for (int i = 0; i < squads.Count; i++)
-        {
-            squads[i].Move(pos[i]);
+			//moveData.myArmy.SquadList[i].Move(pos[i]);
         }
         
         return true;
     }
 
-    public override void UpdatePriority(Data data)
-    {
-        
-    }
+	#endregion
+
+	#region Priority
+	/*=====  Priority  =====*/
+
+	public override void UpdatePriority(Data data_)
+	{
+		A_Move_Data moveData;
+		UnpackMoveData(out moveData, data_);
+
+		_priority = Mathf.Clamp01(GetAttackFactoryRatio(moveData) * attackFactoryWeight 
+								+ GetAttackSquadRatio(moveData) * squadAttackWeight 
+								+ GetCaptureFactoryRatio(moveData) * captureBuildingWeight);		
+
+	}
+
+	private float GetCaptureFactoryRatio(A_Move_Data priority_Data_)
+	{
+		float captureRatio = 0.0f;
+
+		for (int mySquad = 0; mySquad < priority_Data_.myArmy.SquadList.Count; mySquad++)
+		{
+			Squad ownerSquad = priority_Data_.myArmy.SquadList[mySquad];
+
+			if (ownerSquad.Count < minUnitInSquad)
+				continue;
+
+			float squadStrength = Mathf.Clamp01(ownerSquad.Count - minUnitInSquad / (ownerSquad.Count + minUnitInSquad));
+
+			for (int captureTarget = 0; captureTarget < priority_Data_.targetBuilding.Length; captureTarget++)
+			{
+				TargetBuilding targetBuilding = priority_Data_.targetBuilding[captureTarget];
+
+				float dist = Mathf.Clamp01(1.0f - (targetBuilding.transform.position - ownerSquad._currentPos).sqrMagnitude / (movementRange * movementRange));
+
+				captureRatio += Mathf.Clamp01((float)priority_Data_.myBuildPoint/(float)captureUnWantedBuildPoint + squadStrength) * dist;
+			}
+		}
+
+		return captureRatio;
+	}
+
+	private float GetAttackFactoryRatio(A_Move_Data priority_Data_)
+	{
+		float attackRatio = 0.0f;
+
+		float ownerUnitNb = (float)priority_Data_.myArmy.UnitList.Count;
+		float enemyUnitNb = (float)priority_Data_.enemyArmy.UnitList.Count;
+
+		for (int mySquad = 0; mySquad < priority_Data_.myArmy.SquadList.Count; mySquad++)
+		{
+			Squad ownerSquad = priority_Data_.myArmy.SquadList[mySquad];
+
+			if (ownerSquad.Count < minUnitInSquad)
+				continue;
+
+			float squadStrength = Mathf.Clamp01(ownerSquad.Count - minUnitInSquad / (ownerSquad.Count + minUnitInSquad));
+
+			for (int enemyFactory = 0; enemyFactory < priority_Data_.enemyArmy.SquadList.Count; enemyFactory++)
+			{
+				Factory eFactory = priority_Data_.enemyArmy.FactoryList[enemyFactory];
+
+				float dist = Mathf.Clamp01(1.0f - (eFactory.transform.position - ownerSquad._currentPos).sqrMagnitude / (movementRange * movementRange));
+
+				attackRatio += (Mathf.Clamp01(ownerUnitNb - enemyUnitNb / (ownerUnitNb + enemyUnitNb)) + squadStrength) * dist;
+			}
+		}
+
+		return attackRatio;
+	}
+
+	private float GetAttackSquadRatio(A_Move_Data priority_Data_)
+	{
+		float attackRatio = 0.0f;
+
+		for (int mySquad = 0; mySquad < priority_Data_.myArmy.SquadList.Count; mySquad++)
+		{
+			Squad ownerSquad = priority_Data_.myArmy.SquadList[mySquad];
+
+			if (ownerSquad.Count < minUnitInSquad)
+				continue;
+
+			float squadStrength = Mathf.Clamp01(ownerSquad.Count - minUnitInSquad / (ownerSquad.Count + minUnitInSquad));
+
+			for (int enemySquad = 0; enemySquad < priority_Data_.enemyArmy.SquadList.Count; enemySquad++)
+			{
+				Squad eSquad		= priority_Data_.enemyArmy.SquadList[enemySquad];
+
+				float dist = Mathf.Clamp01(1.0f - (eSquad._currentPos - ownerSquad._currentPos).sqrMagnitude/(movementRange * movementRange));
+
+				float ownerCost = (float)ownerSquad.GetCost();
+				float enemyCost = (float)eSquad.GetCost();
+
+				attackRatio += (Mathf.Clamp01(ownerCost -  enemyCost / (ownerCost + enemyCost))  + squadStrength) * dist;
+
+			}
+		}
+
+		return attackRatio;
+	}
+
+
+	#endregion
 }
+

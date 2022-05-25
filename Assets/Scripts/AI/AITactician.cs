@@ -8,12 +8,13 @@ using UnityEngine;
 
 public enum EActionType
 {
-    MakeUnit,
+	None,
+	MakeUnit,
     MakeSquad,
     Build,
     Move,
     
-    None
+	Count
 }
 
 public class Data
@@ -44,7 +45,6 @@ public class AITactician : MonoBehaviour
     public List<AIAction> Actions = new List<AIAction>();
     
     public  List<AIAction> Tactic = new List<AIAction>();
-    private UtilitySystem US;
     
     private void Awake()
     {
@@ -52,15 +52,15 @@ public class AITactician : MonoBehaviour
 
     private void Start()
     {
-
     }
-    public void SetTactic()
+
+    public void SetTactic(Data sortData)
     {
         Tactic.Clear();
 
         foreach (var action in Actions)
         {
-            //action.UpdatePriority(data);
+			action.UpdatePriority(sortData);
             
             if (action.Priority >= MinimumValue)
             {
