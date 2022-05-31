@@ -24,7 +24,7 @@ public class A_Move : AIAction
 	#region Data
 	/*====== Data ======*/
 
-	struct A_Move_Data
+	public class A_Move_Data: AIActionData
 	{
 		public Army myArmy;
 		public Army enemyArmy;
@@ -86,25 +86,30 @@ public class A_Move : AIAction
 	#region Execution
 	/*====== Execution ======*/
 
-	public override bool Execute(Data data)
+	public override bool Execute(AIActionData data)
     {
-		A_Move_Data moveData;
-		UnpackMoveData(out moveData, data);
+	    if (data is A_Move_Data moveData)
+	    {
+			//UnpackMoveData(out moveData, data);
+		    float priority = 0;
+		    Vector3 pos = Vector3.zero;
 
+		    for (int i = 0; i < moveData.myArmy.SquadList.Count; i++)
+		    {
+			    Vector3 vecTemp = Vector3.zero;
+			    SelectPos(ref priority, GetCapturePos(moveData, moveData.myArmy.SquadList[i], out vecTemp), ref pos,
+				    vecTemp);
+			    SelectPos(ref priority, GetAttackFactory(moveData, moveData.myArmy.SquadList[i], out vecTemp), ref pos,
+				    vecTemp);
+			    SelectPos(ref priority, GetAttackSquad(moveData, moveData.myArmy.SquadList[i], out vecTemp), ref pos,
+				    vecTemp);
+			    moveData.myArmy.SquadList[i].Move(pos);
+		    }
 
-		float priority = 0;
-		Vector3 pos = Vector3.zero;
-		
-		for (int i = 0; i < moveData.myArmy.SquadList.Count; i++)
-        {
-	        Vector3 vecTemp = Vector3.zero;
-	        SelectPos(ref priority, GetCapturePos(moveData, moveData.myArmy.SquadList[i], out vecTemp), ref pos,vecTemp);
-	        SelectPos(ref priority, GetAttackFactory(moveData, moveData.myArmy.SquadList[i], out vecTemp), ref pos,vecTemp);
-	        SelectPos(ref priority, GetAttackSquad(moveData, moveData.myArmy.SquadList[i], out vecTemp), ref pos,vecTemp);
-	        moveData.myArmy.SquadList[i].Move(pos);
-        }
-        
-        return true;
+		    return true;
+	    }
+	    else
+		    return false;
     }
 
 	void SelectPos(ref float priority, float value, ref Vector3 pos, Vector3 temp)
@@ -205,15 +210,16 @@ public class A_Move : AIAction
 		return Ratio;
 	}
 
-	public override void UpdatePriority(Data data_)
+	public override void UpdatePriority(AIActionData data_)
 	{
-		A_Move_Data moveData;
-		UnpackMoveData(out moveData, data_);
+		if (data_ is A_Move_Data moveData)
+		{
+			//UnpackMoveData(out moveData, data_);
+			_priority = Mathf.Clamp01(GetAttackFactoryRatio(moveData) * attackFactoryWeight
+			                          + GetAttackSquadRatio(moveData) * squadAttackWeight
+			                          + GetCaptureFactoryRatio(moveData) * captureBuildingWeight);
 
-		_priority = Mathf.Clamp01(GetAttackFactoryRatio(moveData) * attackFactoryWeight 
-								+ GetAttackSquadRatio(moveData) * squadAttackWeight 
-								+ GetCaptureFactoryRatio(moveData) * captureBuildingWeight);		
-
+		}
 	}
 
 	private float GetCaptureFactoryRatio(A_Move_Data priority_Data_)

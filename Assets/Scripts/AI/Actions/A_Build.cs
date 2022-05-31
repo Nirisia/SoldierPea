@@ -4,80 +4,61 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Build", menuName = "Actions/Build")]
 
+public class A_Build_Data : AIActionData
+{
+    public Factory factory = null;
+    public Func<int, Vector3, bool> request = null;
+    public Vector3 pos = Vector3.negativeInfinity;
+    public int Type = -1;
+}
+
+
+[CreateAssetMenu(fileName = "Build", menuName = "Actions/Build")]
 public class A_Build : AIAction
 {
-
-    public override bool Execute(Data data)
+    public override bool Execute(AIActionData data)
     {
-        if (data.package.Count != 4)
+        if (data is A_Build_Data package)
         {
-            Debug.Log("Bad Size of package");
-            return false;
-        }
-        
-        Factory factory = null;
-        Func<int, Vector3, bool> request = null;
-        Vector3 pos = Vector3.negativeInfinity;
-        int Type = -1;
-        foreach (var pack in data.package)
-        {
-            switch (pack.Key)
+            if (package.pos == Vector3.negativeInfinity)
             {
-                case "Request":
-                    request = (Func<int, Vector3, bool>)pack.Value;
-                    break;
-                
-                case "Factory":
-                    factory = (Factory)pack.Value;
-                    break;
-                
-                case "Pos":
-                    pos = (Vector3)pack.Value;
-                    break;
-
-                case "Type":
-                    Type = (int) pack.Value;
-                    break;
-                default:
-                    Debug.LogWarning("bad package");
-                    return false;
+                Debug.Log("Factory not initialize");
+                return false;
             }
-        }
+            else if (package.request == null)
+            {
+                Debug.Log("request not set");
+                return false;
+            }
+            else if (package.Type == -1)
+            {
+                Debug.Log("unitType bad value");
+                return false;
+            }
 
-        if (pos == Vector3.negativeInfinity)
-        {
-            Debug.Log("Factory not initialize");
-            return false;
-        }
-        else if (request == null)
-        {
-            Debug.Log("request not set");
-            return false;
-        }
-        else if (Type == -1)
-        {
-            Debug.Log("unitType bad value");
-            return false;
-        }
-        
-        else if (factory == null)
-        {
-            Debug.Log("factory not init");
-            return false;
-        }
+            else if (package.factory == null)
+            {
+                Debug.Log("factory not init");
+                return false;
+            }
 
-        if (factory.IsBuildingUnit)
-            return false;
-        
-        request(Type, pos);
+            if (package.factory.IsBuildingUnit)
+                return false;
 
-        return true;    
+            package.request(package.Type, package.pos);
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    public override void UpdatePriority(Data data)
+
+    public override void UpdatePriority(AIActionData data)
     {
-        
+
     }
 }
