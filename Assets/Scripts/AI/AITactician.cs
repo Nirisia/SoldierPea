@@ -118,13 +118,6 @@ public class AITactician : MonoBehaviour
         return Tactic[0];
     }
 
-
-    public void ChooseTypeAndCountUnit(in Data data)
-    {
-        data.package.Add("Count",5);
-        data.package.Add("Type", 1);
-    }
-
     public void ChooseTypeAndPosFactory(in Data data)
     {
         data.package.Add("Type", 0);
