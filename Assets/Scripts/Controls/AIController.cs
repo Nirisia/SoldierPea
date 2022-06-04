@@ -43,14 +43,14 @@ public sealed class AIController : UnitController
 
 		_targetBuildings = GameServices.GetTargetBuildings();
 
-		Data data = InitSortData();
-
-        _tactician.SetTactic(data);
+		//AIActionData data = InitSortData();
+		
+	    _tactician.SetTactic(InitExecData());
 	}
 
-	private Data InitSortData()
+	/*private AIActionData InitSortData()
 	{
-		Data toReturn = new Data();
+		AIActionData toReturn = new AIActionData();
 
 		toReturn.package.Add("Army", _army);
 		toReturn.package.Add("EnemyArmy", _enemyArmy);
@@ -59,16 +59,14 @@ public sealed class AIController : UnitController
 
 
 		return toReturn;
-	}
+	}*/
 
     protected override void Update()
     {
 		//TODO: Update Priority (in SetTactic)
 
         base.Update();
-        Data data = new Data();
-        if(InitExecData(data))
-            _tactician.ExecuteTactic(data);
+	    _tactician.ExecuteTactic(InitExecData());
     }
 
 	#endregion
@@ -76,12 +74,12 @@ public sealed class AIController : UnitController
 	#region Tactics methods
 	/*===== Tactics methods =====*/
 
-	public bool InitExecData(in Data data)
+	public AIActionData InitExecData()
     {
         if (!_tactician.GetNextAction())
         {
             Debug.Log("action is null");
-            return false;
+            return null;
         }
 
         //TODO: Compute value for tactics and replace hard coded
@@ -89,46 +87,72 @@ public sealed class AIController : UnitController
         switch (_tactician.GetNextAction().AType)
         {
             case EActionType.MakeUnit:
-				SetMakeUnitData(data);
-				break;
+				return SetMakeUnitData();
             
             case EActionType.MakeSquad:
-                data.package.Add("Army", _army);
-                _tactician.CreateSquad(data, _army);
-                break;
+	            return Set_MakeSquad_Data();
             
             case EActionType.Move:
-				SetMoveData(data);
-                break;
-            
-            case EActionType.Build:
-                Func<int, Vector3, bool> request = RequestFactoryBuild;
-                _selectedFactory = _army.FactoryList[0];
-                data.package.Add("Factory", _army.FactoryList[0]);
-                
-                data.package.Add("Request", request);
+				return SetMoveData();
 
-                _tactician.ChooseTypeAndPosFactory(data);
-                
-                break;
+            case EActionType.Build:
+	            return SetFactoryData();
         }
 
-        return true;
+        return null;
     }
 
-	private void SetMakeUnitData(in Data data)
+	private A_MakeUnit_Data SetMakeUnitData()
 	{
-		data.package.Add("Army", _army);
-		data.package.Add("EnemyArmy", _enemyArmy);
-		data.package.Add("OwnerBuildPoints", _TotalBuildPoints);
+
+		A_MakeUnit_Data data = new A_MakeUnit_Data();
+		
+		data.army = _army;
+		data.enemyArmy = _enemyArmy;
+		data.buildPoints = _TotalBuildPoints;
+
+		return data;
 	}
 
-	private void SetMoveData(in Data data)
+	private A_Move_Data SetMoveData()
 	{
-		data.package.Add("Army", _army);
-		data.package.Add("EnemyArmy", _enemyArmy);
-		data.package.Add("TargetBuildings", _targetBuildings);
-		data.package.Add("OwnerBuildPoints", _TotalBuildPoints);
+		A_Move_Data data = new A_Move_Data();
+		
+		data.enemyArmy = _enemyArmy;
+		data.myArmy = _army;
+		data.targetBuilding = _targetBuildings;
+		data.myBuildPoint = _TotalBuildPoints;
+
+		return data;
+	}
+	
+	private A_Squad_Data Set_MakeSquad_Data()
+	{
+		A_Squad_Data data = new A_Squad_Data();
+		data.army = _army;
+		List<int> typeList = new List<int>();
+		typeList.Add(1);
+		List<int>countsList = new List<int>();
+		countsList.Add(4);
+
+		data.TypeList = typeList;
+		data.CountsList = countsList;
+		return data;
+	}
+	
+	private A_Build_Data SetFactoryData()
+	{
+		A_Build_Data data = new A_Build_Data();
+		
+		data.enemyArmy = _enemyArmy;
+		data.army = _army;
+		data.targetBuilding = _targetBuildings;
+		data.buildPoints = _TotalBuildPoints;
+		
+		Func<int, Vector3, bool> request = RequestFactoryBuild;
+		data.request = request;
+		
+		return data;
 	}
 
 	#endregion

@@ -4,6 +4,13 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "MakeUnit", menuName = "Actions/MakeUnit")]
 
+public class A_MakeUnit_Data: AIActionData
+{
+	public Army army;
+	public Army enemyArmy;
+	public int buildPoints;
+}
+
 public class A_MakeUnit : AIAction
 {
 
@@ -18,15 +25,10 @@ public class A_MakeUnit : AIAction
 	#region Data
 	/*===== Data =====*/
 
-	struct A_MakeUnit_Data
-	{
-		public Army army;
-		public Army enemyArmy;
-		public int buildPoints;
-	}
 
 
-	private bool UnpackMakeUnitData(out A_MakeUnit_Data makeUnitData_, Data abstractData_)
+
+	/*private bool UnpackMakeUnitData(out A_MakeUnit_Data makeUnitData_, Data abstractData_)
 	{
 		makeUnitData_ = new A_MakeUnit_Data();
 
@@ -63,98 +65,102 @@ public class A_MakeUnit : AIAction
 		}
 
 		return true;
-	}
+	}*/
 
 	#endregion
 
-	public override bool Execute(Data data)
+	public override bool Execute(AIActionData data)
     {
-        if (data.package.Count != 3)
-        {
-            Debug.Log("Bad Size of package");
-            return false;
-        }
 
-        int[] typeCounts = new int[6];
+	    int[] typeCounts = new int[6];
 
         int totalCount = 0;
 
         Factory factory = null;
-		A_MakeUnit_Data makeUnitData;
-		UnpackMakeUnitData(out makeUnitData, data);
-        
-        if(makeUnitData.army.Cost == 0)
-        {
-            factory = makeUnitData.army.FactoryList[0];
-            typeCounts[0] = startCountUnit;
-        }
+		
+		//UnpackMakeUnitData(out makeUnitData, data);
+		if (data is A_MakeUnit_Data package)
+		{
 
-        if (makeUnitData.enemyArmy.Cost > makeUnitData.army.Cost)
-        {
-            totalCount = Mathf.Min(makeUnitData.enemyArmy.Cost - makeUnitData.army.Cost, makeUnitData.buildPoints);
 
-			if (totalCount == 0)
+			if (package.army.Cost == 0)
 			{
-				Debug.Log("No construction points");
+				factory = package.army.FactoryList[0];
+				typeCounts[0] = startCountUnit;
+			}
+
+			if (package.enemyArmy.Cost > package.army.Cost)
+			{
+				totalCount = Mathf.Min(package.enemyArmy.Cost - package.army.Cost, package.buildPoints);
+
+				if (totalCount == 0)
+				{
+					Debug.Log("No construction points");
+					return false;
+				}
+
+				if (totalCount >= 5)
+				{
+					for (int i = 0; i < package.army.FactoryList.Count; i++)
+					{
+						if (package.army.FactoryList[i].GetFactoryData.TypeId == 1)
+						{
+							factory = package.army.FactoryList[i];
+							break;
+						}
+						else
+						{
+							factory = package.army.FactoryList[0];
+						}
+					}
+
+					if (factory.GetFactoryData.TypeId == 1)
+					{
+						for (int c = 5; c >= 3; c--)
+						{
+							typeCounts[c] = totalCount / (c + 1);
+							totalCount %= (c + 1);
+						}
+					}
+				}
+
+				factory = package.army.FactoryList[0];
+				for (int c = 2; c >= 0; c--)
+				{
+					typeCounts[c] = totalCount / (c + 1);
+					totalCount %= (c + 1);
+				}
+			}
+
+			if (!factory)
+			{
+				Debug.Log("Factory not initialize");
 				return false;
 			}
 
-			if (totalCount >= 5)
-            {
-                for (int i = 0; i < makeUnitData.army.FactoryList.Count; i++)
-                {
-                    if (makeUnitData.army.FactoryList[i].GetFactoryData.TypeId == 1)
-                    {
-                        factory = makeUnitData.army.FactoryList[i];
-                        break;
-                    }
-                    else
-                    {
-                        factory = makeUnitData.army.FactoryList[0];
-                    }
-                }
-
-                if (factory.GetFactoryData.TypeId == 1)
-                {
-					for (int c = 5; c >= 3; c--)
-                    {
-                        typeCounts[c] = totalCount / (c + 1);
-                        totalCount %= (c + 1);
-                    }
-                }
-            }
-
-            factory = makeUnitData.army.FactoryList[0];
-            for (int c = 2; c >= 0; c--)
-            {
-                typeCounts[c] = totalCount / (c + 1);
-                totalCount %= (c + 1);
-            }
-        }
-
-        if (!factory)
-        {
-            Debug.Log("Factory not initialize");
-            return false;
-        }
-     
-		for (int i = 0; i < typeCounts.Length; i++)
-		{
-			for (int j = 0; j < typeCounts[i]; j++)
+			for (int i = 0; i < typeCounts.Length; i++)
 			{
-				factory.RequestUnitBuild(i);
+				for (int j = 0; j < typeCounts[i]; j++)
+				{
+					factory.RequestUnitBuild(i);
+				}
 			}
-		}
 
-           
-        return true;
+
+			return true;
+		}
+		else
+			return false;
     }
 
-    public override void UpdatePriority(Data data)
+    public override void UpdatePriority(AIActionData data)
     {
-		A_MakeUnit_Data makeUnitData;
-		UnpackMakeUnitData(out makeUnitData, data);
-
-		_priority = makeUnitData.enemyArmy.Cost != 0 ? Mathf.Min(((float)makeUnitData.enemyArmy.Cost - (float)makeUnitData.army.Cost) / (float)armiesUnitDifference, makeUnitData.buildPoints) : 1.0f;
-	}
+	    if (data is A_MakeUnit_Data package)
+		{
+			_priority = package.enemyArmy.Cost != 0
+				? Mathf.Min(((float) package.enemyArmy.Cost - (float) package.army.Cost) / (float) armiesUnitDifference,
+				package.buildPoints)
+				: 1.0f;
+		}
+    }
 }

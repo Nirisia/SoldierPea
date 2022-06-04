@@ -17,7 +17,7 @@ public enum EActionType
 	Count
 }
 
-public class Data
+/*public class Data
 {
     public Data()
     {
@@ -26,7 +26,7 @@ public class Data
     public Dictionary<string, object> package;
     
     
-}
+}*/
 
 
 
@@ -54,7 +54,7 @@ public class AITactician : MonoBehaviour
     {
     }
 
-    public void SetTactic(Data sortData)
+    public void SetTactic(AIActionData sortData)
     {
         Tactic.Clear();
 
@@ -100,7 +100,7 @@ public class AITactician : MonoBehaviour
         Debug.LogError("Not action found");
         return null;
     }
-    public void ExecuteTactic(Data data)
+    public void ExecuteTactic(AIActionData data)
     {
         if (GetNextAction())
         {
@@ -118,7 +118,7 @@ public class AITactician : MonoBehaviour
         return Tactic[0];
     }
 
-    public void ChooseTypeAndPosFactory(in Data data)
+    /*public void ChooseTypeAndPosFactory(in AIActionData data)
     {
         data.package.Add("Type", 0);
         Vector3 pos = new Vector3(20,0,0);
@@ -126,7 +126,7 @@ public class AITactician : MonoBehaviour
         
     }
     
-    public void CreateSquad(in Data data, Army army)
+    public void CreateSquad(in AIActionData data, Army army)
     {
         List<int> typeList = new List<int>();
         typeList.Add(1);
@@ -174,6 +174,6 @@ public class AITactician : MonoBehaviour
 
         
         
-    }
+    }*/
     
 }

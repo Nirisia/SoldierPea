@@ -4,6 +4,15 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "Move", menuName = "Actions/Move")]
+
+public class A_Move_Data: AIActionData
+{
+	public Army myArmy;
+	public Army enemyArmy;
+	public TargetBuilding[] targetBuilding;
+	public int myBuildPoint;
+}
+
 public class A_Move : AIAction
 {
 
@@ -24,15 +33,9 @@ public class A_Move : AIAction
 	#region Data
 	/*====== Data ======*/
 
-	public class A_Move_Data: AIActionData
-	{
-		public Army myArmy;
-		public Army enemyArmy;
-		public TargetBuilding[] targetBuilding;
-		public int myBuildPoint;
-	}
 
-	private bool UnpackMoveData(out A_Move_Data moveData_, Data abstractData_)
+
+	/*private bool UnpackMoveData(out A_Move_Data moveData_, AIActionData abstractData_)
 	{
 		moveData_ = new A_Move_Data();
 
@@ -80,7 +83,7 @@ public class A_Move : AIAction
 
 		return true;
 	}
-
+*/
 	#endregion
 
 	#region Execution
