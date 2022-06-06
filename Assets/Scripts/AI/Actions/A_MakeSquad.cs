@@ -6,6 +6,12 @@ using UnityEngine;
 
 public class A_Squad_Data : AIActionData
 {
+	public override EActionType GetActionType()
+	{
+		return EActionType.MakeSquad;
+	}
+
+	public Squad squad = new Squad();
     public Army army = null;
     public Army EnemyArmy = null;
     public TargetBuilding[] targets = null;

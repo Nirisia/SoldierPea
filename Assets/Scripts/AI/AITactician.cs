@@ -54,13 +54,13 @@ public class AITactician : MonoBehaviour
     {
     }
 
-    public void SetTactic(AIActionData sortData)
+    public void SetTactic(List<AIActionData> sortData)
     {
         Tactic.Clear();
 
         foreach (var action in Actions)
         {
-			action.UpdatePriority(sortData);
+			action.UpdatePriority(sortData.First(e => action.AType == e.GetActionType()));
             
             if (action.Priority >= MinimumValue)
             {

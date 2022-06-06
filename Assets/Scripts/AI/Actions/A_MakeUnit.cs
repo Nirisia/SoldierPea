@@ -6,6 +6,11 @@ using UnityEngine;
 
 public class A_MakeUnit_Data: AIActionData
 {
+	public override EActionType GetActionType()
+	{
+		return EActionType.MakeUnit;
+	}
+
 	public Army army;
 	public Army enemyArmy;
 	public int buildPoints;
@@ -19,53 +24,6 @@ public class A_MakeUnit : AIAction
 	
 	[SerializeField, Min(0)] private int startCountUnit			= 5;
 	[SerializeField, Min(0)] private int armiesUnitDifference	= 7;
-
-	#endregion
-
-	#region Data
-	/*===== Data =====*/
-
-
-
-
-	/*private bool UnpackMakeUnitData(out A_MakeUnit_Data makeUnitData_, Data abstractData_)
-	{
-		makeUnitData_ = new A_MakeUnit_Data();
-
-		foreach (var pack in abstractData_.package)
-		{
-			switch (pack.Key)
-			{
-				case "Army":
-					makeUnitData_.army = (Army)pack.Value;
-					break;
-
-				case "EnemyArmy":
-					makeUnitData_.enemyArmy = (Army)pack.Value;
-					break;
-
-				case "OwnerBuildPoints":
-					makeUnitData_.buildPoints = (int)pack.Value;
-					break;
-				default:
-					Debug.LogWarning("bad package");
-					return false;
-			}
-		}
-
-		if (makeUnitData_.army == null)
-		{
-			Debug.Log("A_MakeUnit: AIController Army not init");
-			return false;
-		}
-		else if (makeUnitData_.enemyArmy == null)
-		{
-			Debug.Log("A_MakeUnit: Other Controller Army not init");
-			return false;
-		}
-
-		return true;
-	}*/
 
 	#endregion
 
@@ -157,10 +115,10 @@ public class A_MakeUnit : AIAction
     {
 	    if (data is A_MakeUnit_Data package)
 		{
-			_priority = package.enemyArmy.Cost != 0
+			_priority = Mathf.Clamp01(package.army.Cost != 0
 				? Mathf.Min(((float) package.enemyArmy.Cost - (float) package.army.Cost) / (float) armiesUnitDifference,
 				package.buildPoints)
-				: 1.0f;
+				: 1.0f);
 		}
     }
 }

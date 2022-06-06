@@ -1,12 +1,14 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
 using UnityEngine;
 
 
 public class A_Build_Data: AIActionData
 {
+	public override EActionType GetActionType()
+	{
+		return EActionType.Build;
+	}
+
 	public Army army;
 	public Army enemyArmy;
 	public TargetBuilding[] targetBuilding;
@@ -23,68 +25,8 @@ public class A_Build : AIAction
 	/*===== Serialized Field =====*/
 
 	[SerializeField, Min(0)] private int typeFactory = 0;
-
-	#endregion
-
-	#region Data
-	/*===== Data =====*/
-
-	/*private bool UnpackBuildData(out A_Build_Data buildData_, Data abstractData_)
-	{
-		buildData_ = new A_Build_Data();
-
-		foreach (var pack in abstractData_.package)
-		{
-			switch (pack.Key)
-			{
-				case "Army":
-					buildData_.army = (Army)pack.Value;
-					break;
-
-				case "EnemyArmy":
-					buildData_.enemyArmy = (Army)pack.Value;
-					break;
-
-				case "OwnerBuildPoints":
-					buildData_.buildPoints = (int)pack.Value;
-					break;
-
-				case "TargetBuildings":
-					buildData_.targetBuilding = (TargetBuilding[])pack.Value;
-					break;
-
-				case "Request":
-					buildData_.request = (Func<int, Vector3, bool>)pack.Value;
-					break;
-				default:
-					Debug.LogWarning("bad package");
-					return false;
-			}
-		}
-
-		if (buildData_.army == null)
-		{
-			Debug.Log("A_Build: AIController Army not init");
-			return false;
-		}
-		else if (buildData_.enemyArmy == null)
-		{
-			Debug.Log("A_Build: Other Controller Army not init");
-			return false;
-		}
-		else if (buildData_.request == null)
-		{
-			Debug.Log("A_Build: Other Controller Request not init");
-			return false;
-		}
-		else if (buildData_.targetBuilding == null)
-		{
-			Debug.Log("A_Build: Target Buildings not init");
-			return false;
-		}
-
-		return true;
-	}*/
+	[SerializeField] public float unitWeight = 0.5f;
+	[SerializeField] public float costWeight = 0.5f;
 
 	#endregion
 
@@ -92,29 +34,48 @@ public class A_Build : AIAction
     {
         if (data is A_Build_Data package)
         {
+			/* init useful data */
 	        Factory factory = package.army.FactoryList[0];
 	        Vector3 armyPos = package.army.transform.position;
 
+			/* not create factory when building unit */
 	        if (factory.IsBuildingUnit)
 		        return false;
 
-	        Vector3 pos = Vector3.zero;
+			/* init variable for computing pos */
+	        Vector3			pos				= Vector3.zero;
+	        float			dist			= float.MaxValue;
+			TargetBuilding	chosenBuilding	= null;
+			bool			build			= false;
 
-	        float dist = float.MaxValue;
 	        for (int i = 0; i < package.targetBuilding.Length; i++)
 	        {
+				/* get distance from the targetBuilding to the enemy army's pos */
 		        Vector3 iTargetPos = package.targetBuilding[i].transform.position;
 		        float iDist = (armyPos - iTargetPos).sqrMagnitude;
 
-		        if (iDist < dist)
+				/* if our target building is close enough */
+		        if (iDist < dist && package.targetBuilding[i].GetTeam() == package.army.Team)
 		        {
-			        dist = iDist;
-			        pos = iTargetPos;
+					/* change the one we create */
+					chosenBuilding = package.targetBuilding[i];
+					dist	= iDist;
+			        pos		= iTargetPos;
+					build	= true;
 		        }
 	        }
-	        //buildData.request(typeFactory, pos);
 
-	        return true;    
+			if (build)
+			{
+				/* we do not build on the target building but near it so we compute an offset */
+				Bounds targetBounds = chosenBuilding.GetComponent<Collider>().bounds;
+				float offset = factory.GetBuildableFactoryData(typeFactory).RadiusOffset;
+
+				pos	+= new Vector3(UnityEngine.Random.insideUnitCircle.x * targetBounds.extents.x * offset, 0.0f, UnityEngine.Random.insideUnitCircle.y * targetBounds.extents.z * offset);
+				return package.request(typeFactory, pos);
+			}
+
+	        return build;    
         }
         else
         {
@@ -125,6 +86,16 @@ public class A_Build : AIAction
 
     public override void UpdatePriority(AIActionData data)
     {
-        
+		if (data is A_Build_Data package)
+        {
+			Army _army = package.army;
+			Army _enemyArmy = package.enemyArmy;
+			int totalBuildPoints = package.buildPoints;
+			int cost = package.army.FactoryList[0].GetFactoryCost(typeFactory);
+			int totalCost = (_enemyArmy.Cost + _army.Cost);
+
+			_priority =	Mathf.Clamp01(totalCost > 0 ? ((_army.Cost - _enemyArmy.Cost) /  totalCost * unitWeight) : 0.0f 
+						+ ((totalBuildPoints - cost) / (cost + totalBuildPoints) * costWeight));
+		}
     }
 }

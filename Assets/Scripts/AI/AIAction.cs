@@ -21,4 +21,5 @@ public abstract class AIAction : ScriptableObject
 
 public abstract class AIActionData
 {
+	public abstract EActionType GetActionType();
 }
