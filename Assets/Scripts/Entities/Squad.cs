@@ -13,7 +13,7 @@ public class Squad
 	private List<Unit> _group	= new List<Unit>();
 
 	private Vector3	_desiredPosition	= Vector3.zero;
-	public	Vector3	_currentPos			= Vector3.zero;
+	private	Vector3	_currentPos			= Vector3.zero;
 	private bool	_moves				= false;
 	private float	_radius				= 0.0f;
 
@@ -24,6 +24,7 @@ public class Squad
 	public int		Count	=> _group.Count;
 	public bool		Moving	=> _moves;
 	public Vector3	Position => _currentPos;
+	public Vector3	DesiredPos => _desiredPosition;
 
 	public void UpdatePosition()
 	{

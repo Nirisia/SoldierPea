@@ -14,6 +14,7 @@ public sealed class Factory : BaseEntity
     float			CurrentBuildDuration	= 0f;
     float			EndBuildDate			= 0f;
     int				SpawnCount				= 0;
+	int				unitQueueCost			= 0;
 
     /* !! max available unit count in menu is set to 9, available factories count to 3 !! */
     const int MaxAvailableUnits		= 9;
@@ -40,6 +41,7 @@ public sealed class Factory : BaseEntity
     public Action<Factory> OnFactoryBuilt;
     public Action OnBuildCanceled;
     public bool IsBuildingUnit { get { return CurrentState == State.BuildingUnit; } }
+	public int BuildingQueueCost => unitQueueCost;
 
     #region MonoBehaviour methods
     protected override void Awake()
@@ -193,6 +195,7 @@ public sealed class Factory : BaseEntity
             Controller = GameServices.GetControllerByTeam(Team);
 
         int cost = GetUnitCost(unitMenuIndex);
+		unitQueueCost += cost;
         if (Controller.TotalBuildPoints < cost || BuildingQueue.Count >= MaxBuildingQueueSize)
             return false;
 
@@ -232,7 +235,8 @@ public sealed class Factory : BaseEntity
             if (unit != null)
             {
                 Controller.AddUnit(unit);
-                (Controller as PlayerController)?.UpdateFactoryBuildQueueUI(RequestedEntityBuildIndex);
+				unitQueueCost -= unit.GetUnitData.Cost;
+				(Controller as PlayerController)?.UpdateFactoryBuildQueueUI(RequestedEntityBuildIndex);
             }
         };
     }

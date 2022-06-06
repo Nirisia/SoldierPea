@@ -40,7 +40,7 @@ public class Army : MonoBehaviour
 	private void OnDrawGizmos()
 	{
 		if (_squadList.Count > 0)
-			Gizmos.DrawSphere(_squadList[0]._currentPos, 1.0f);
+			Gizmos.DrawSphere(_squadList[0].Position, 1.0f);
 	}
 
 
