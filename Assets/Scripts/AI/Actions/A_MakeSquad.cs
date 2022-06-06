@@ -6,21 +6,33 @@ using UnityEngine;
 
 public class A_Squad_Data : AIActionData
 {
-    public Squad squad = new Squad();
     public Army army = null;
-    public List<int> TypeList = new List<int>();
-    public List<int> CountsList = new List<int>();
-    public int TotalUnit = 0;
+    public Army EnemyArmy = null;
+    public TargetBuilding[] targets = null;
+
 }
 
 [CreateAssetMenu(fileName = "MakeSquad", menuName = "Actions/Squad")]
 public class A_MakeSquad : AIAction
 {
+    
+    #region Serialized Field
+    /*===== Serialized Field =====*/
+
+    [SerializeField, Range(0.0f, 1.0f)] private float squadValueWeight = 0.3f;
+    [SerializeField, Range(0.0f, 1.0f)] private float costWeight = 0.3f;
+    [SerializeField, Range(0.0f, 1.0f)] private float distWeight = 0.3f;
+    [SerializeField, Range(0.0f, 1.0f)] private float Radius = 1f;
+    [SerializeField, Range(0.0f, 1.0f)] private float Seuil = 0.7f;
+    
+    
+    #endregion
+    
     public override bool Execute(AIActionData data)
     {
         if (data is A_Squad_Data package)
         {
-            foreach (var value in package.CountsList)
+            /*foreach (var value in package.CountsList)
                 package.TotalUnit += value;
 
             if (package.army.UnitList.Count < package.TotalUnit)
@@ -59,7 +71,7 @@ public class A_MakeSquad : AIAction
                 return false;
             }
 
-            package.army.AddSquad(package.squad);
+            package.army.AddSquad(package.squad);*/
             Squad test = new Squad();
             test.Add(package.army.UnitList[4]);
             package.army.AddSquad(test);
@@ -77,5 +89,16 @@ public class A_MakeSquad : AIAction
 
     public override void UpdatePriority(AIActionData data)
     {
+        if (data is A_Squad_Data package)
+        {
+            foreach (var factory in package.army.FactoryList)
+            {
+                if (factory.IsBuildingUnit)
+                {
+                    
+                }
+            }
+        }
+
     }
 }

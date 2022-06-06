@@ -130,13 +130,9 @@ public sealed class AIController : UnitController
 	{
 		A_Squad_Data data = new A_Squad_Data();
 		data.army = _army;
-		List<int> typeList = new List<int>();
-		typeList.Add(1);
-		List<int>countsList = new List<int>();
-		countsList.Add(4);
-
-		data.TypeList = typeList;
-		data.CountsList = countsList;
+		data.targets = _targetBuildings;
+		data.EnemyArmy = _enemyArmy;
+		
 		return data;
 	}
 	
