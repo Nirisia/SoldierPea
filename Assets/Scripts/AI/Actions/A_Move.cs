@@ -119,7 +119,7 @@ public class A_Move : AIAction
 		float enemyUnitNb = (float)priority_Data_.enemyArmy.UnitList.Count;
 		
 		
-		for (int enemyFactory = 0; enemyFactory < priority_Data_.enemyArmy.SquadList.Count; enemyFactory++)
+		for (int enemyFactory = 0; enemyFactory < priority_Data_.enemyArmy.FactoryList.Count; enemyFactory++)
 		{
 			Factory eFactory = priority_Data_.enemyArmy.FactoryList[enemyFactory];
 
@@ -225,7 +225,7 @@ public class A_Move : AIAction
 
 			float squadStrength = Mathf.Clamp01(ownerSquad.Count - minUnitInSquad / (ownerSquad.Count + minUnitInSquad));
 
-			for (int enemyFactory = 0; enemyFactory < priority_Data_.enemyArmy.SquadList.Count; enemyFactory++)
+			for (int enemyFactory = 0; enemyFactory < priority_Data_.enemyArmy.FactoryList.Count; enemyFactory++)
 			{
 				Factory eFactory = priority_Data_.enemyArmy.FactoryList[enemyFactory];
 
