@@ -201,9 +201,6 @@ public class Unit : BaseEntity
         if (CanAttack(EntityTarget) == false)
             return;
 
-        if (NavMeshAgent)
-            NavMeshAgent.isStopped = true;
-
         transform.LookAt(EntityTarget.transform);
         // only keep Y axis
         Vector3 eulerRotation = transform.eulerAngles;
