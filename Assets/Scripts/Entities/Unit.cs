@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -149,9 +151,37 @@ public class Unit : BaseEntity
             StartRepairing(entity);
     }
 
-    public bool CanSeeEnemy()
+	private class DistComparer : IComparer<Collider>
+	{
+		public Vector3 pos;
+
+		public DistComparer(Vector3 pos_) => pos = pos_;
+
+		public int Compare(Collider x, Collider y)
+		{
+			if (x == y)
+				return 0;
+
+			float distX = (x.transform.position - pos).sqrMagnitude;
+			float distY = (y.transform.position - pos).sqrMagnitude;
+
+			if (distX < distY)
+				return 1;
+			if (distX > distY)
+				return -1;
+
+			return 0;
+		}
+	}
+
+	public bool CanSeeEnemy()
     {
         Collider[] targetColliders = Physics.OverlapSphere(transform.position, GetUnitData.AttackDistanceMax);
+
+		/* sort from closest to farthest */
+		DistComparer distComparer = new DistComparer(transform.position);
+		targetColliders = targetColliders.OrderBy(e => e, distComparer).ToArray();
+
         foreach (var targetCollider in targetColliders)
         {
             BaseEntity enemy = targetCollider.GetComponent<BaseEntity>();
