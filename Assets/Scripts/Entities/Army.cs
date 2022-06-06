@@ -62,7 +62,7 @@ public class Army : MonoBehaviour
 		_factoryList.Add(factory);
 	}
 
-	virtual public void AddUnit(Unit unit)
+	public void AddUnit(Unit unit)
 	{
 		unit.OnDeadEvent += () =>
 		{
@@ -73,9 +73,19 @@ public class Army : MonoBehaviour
 		_cost += unit.Cost;
 	}
 
-	virtual public void AddSquad(Squad squad)
+	public void AddSquad(Squad squad)
 	{
 		_squadList.Add(squad);
+	}
+
+	public int CostPending()
+	{
+		int costAllQueue = 0;
+		foreach (var factory in _factoryList)
+		{
+			costAllQueue += factory.BuildingQueueCost;
+		}
+		return costAllQueue;
 	}
 	
 	/*====== Init Methods ======*/
