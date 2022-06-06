@@ -13,4 +13,7 @@ MonoBehaviour:
   m_Name: Build
   m_EditorClassIdentifier: 
   _priority: 0.4
-  AType: 2
+  AType: 3
+  typeFactory: 0
+  unitWeight: 0.5
+  costWeight: 0.5

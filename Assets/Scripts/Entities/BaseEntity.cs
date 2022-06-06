@@ -16,6 +16,7 @@ public abstract class BaseEntity : MonoBehaviour, ISelectable, IDamageable, IRep
     public Action OnDeadEvent;
     public bool IsSelected { get; protected set; }
     public bool IsAlive { get; protected set; }
+    public bool NeedHeal { get; protected set; }
     virtual public void Init(ETeam _team)
     {
         if (IsInitialized)
@@ -54,6 +55,7 @@ public abstract class BaseEntity : MonoBehaviour, ISelectable, IDamageable, IRep
             return;
 
         HP -= damageAmount;
+        NeedHeal = true;
 
         OnHpUpdated?.Invoke();
 
@@ -78,6 +80,7 @@ public abstract class BaseEntity : MonoBehaviour, ISelectable, IDamageable, IRep
     virtual public void Repair(int amount)
     {
         OnHpUpdated?.Invoke();
+        HP += amount;
     }
     virtual public void FullRepair()
     {

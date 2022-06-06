@@ -13,4 +13,9 @@ MonoBehaviour:
   m_Name: MakeSquad
   m_EditorClassIdentifier: 
   _priority: 0.3
-  AType: 1
+  AType: 2
+  squadValueWeight: 0.3
+  costWeight: 0.3
+  distWeight: 0.3
+  Radius: 1
+  Seuil: 0.7

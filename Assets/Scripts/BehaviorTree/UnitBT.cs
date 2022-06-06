@@ -15,8 +15,12 @@ public class UnitBT : Tree
             {
                 new SeeEnemyTask(owner),
                 new AttackTask(owner),
+            }),
+            new Sequence(new List<Node>
+            {
+                new SeeAllyTask(owner),
                 new RepairingTask(owner)
-            }),        
+            }),
             new Sequence(new List<Node>
             {
                 new SeePointTask(owner),

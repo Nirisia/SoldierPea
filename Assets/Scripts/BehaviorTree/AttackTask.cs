@@ -12,13 +12,15 @@ public class AttackTask : Node
     }
     public override NodeState Evaluate()
     {
-        if (unit.EntityTarget.GetTeam() != unit.GetTeam())
+        if (unit.CanAttack(unit.EntityTarget) == true)
         {
             unit.ComputeAttack();
             state = NodeState.SUCCESS;
             return state;
         }
+
         state = NodeState.FAILURE;
         return state;
+
     }
 }

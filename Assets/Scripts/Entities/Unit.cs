@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Linq;
 
 public class Unit : BaseEntity
 {
@@ -185,9 +186,30 @@ public class Unit : BaseEntity
         foreach (var targetCollider in targetColliders)
         {
             BaseEntity enemy = targetCollider.GetComponent<BaseEntity>();
-            if (enemy != null)
+            if (enemy != null && enemy.GetTeam() != this.GetTeam())
             {
                 EntityTarget = enemy;
+                Debug.Log(EntityTarget + "see by" + this);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool CanSeeAlly()
+    {
+        Collider[] targetColliders = Physics.OverlapSphere(transform.position, GetUnitData.AttackDistanceMax);
+
+        DistComparer distComparer = new DistComparer(transform.position);
+        targetColliders = targetColliders.OrderBy(e => e, distComparer).ToArray();
+
+        foreach (var targetCollider in targetColliders)
+        {
+            BaseEntity ally = targetCollider.GetComponent<Unit>();
+            if (ally != null && ally.GetTeam() == this.GetTeam())
+            {
+                EntityTarget = ally;
+                Debug.Log(EntityTarget + "see by" + this);
                 return true;
             }
         }
@@ -228,9 +250,6 @@ public class Unit : BaseEntity
     }
     public void ComputeAttack()
     {
-        if (CanAttack(EntityTarget) == false)
-            return;
-
         transform.LookAt(EntityTarget.transform);
         // only keep Y axis
         Vector3 eulerRotation = transform.eulerAngles;
@@ -302,6 +321,9 @@ public class Unit : BaseEntity
         if ((target.transform.position - transform.position).sqrMagnitude > GetUnitData.RepairDistanceMax * GetUnitData.RepairDistanceMax)
             return false;
 
+        if (target.NeedHeal == false)
+            return false;
+
         return true;
     }
     public void StartRepairing(BaseEntity entity)
@@ -315,12 +337,6 @@ public class Unit : BaseEntity
     // $$$ TODO : add repairing visual feedback
     public void ComputeRepairing()
     {
-        if (CanRepair(EntityTarget) == false)
-            return;
-
-        if (NavMeshAgent)
-            NavMeshAgent.isStopped = true;
-
         transform.LookAt(EntityTarget.transform);
         // only keep Y axis
         Vector3 eulerRotation = transform.eulerAngles;

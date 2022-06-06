@@ -963,8 +963,13 @@ PrefabInstance:
     - target: {fileID: 6399179960504004712, guid: fee74b0095774cf4f9701d9fab58813d,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7859672622032877473, guid: fee74b0095774cf4f9701d9fab58813d,
+        type: 3}
+      propertyPath: _tactician
+      value: 
+      objectReference: {fileID: 1826171970}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fee74b0095774cf4f9701d9fab58813d, type: 3}
 --- !u!114 &1256912380 stripped
@@ -1406,6 +1411,31 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 48757321}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1826171968 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6399179960504004712, guid: fee74b0095774cf4f9701d9fab58813d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1247498210}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1826171970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1826171968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b39acf6994f294f47bfe596905764f76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MinimumValue: 0.1
+  Actions:
+  - {fileID: 11400000, guid: b836b4e3f6cd07e48863548946f8e22c, type: 2}
+  - {fileID: 11400000, guid: 400864f6b2baf4c4bb6b15fe4ff63b9f, type: 2}
+  - {fileID: 11400000, guid: 88704348f6bc1f84eb7741fb915fdb90, type: 2}
+  - {fileID: 11400000, guid: 6c69e72c4f886934bb6241a2b8683715, type: 2}
+  Tactic: []
 --- !u!1 &1866786994
 GameObject:
   m_ObjectHideFlags: 0

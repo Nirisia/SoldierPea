@@ -13,4 +13,10 @@ MonoBehaviour:
   m_Name: Move
   m_EditorClassIdentifier: 
   _priority: 0.1
-  AType: 3
+  AType: 4
+  squadAttackWeight: 0.3
+  attackFactoryWeight: 0.3
+  captureBuildingWeight: 0.3
+  movementRange: 100
+  captureUnWantedBuildPoint: 10
+  minUnitInSquad: 3

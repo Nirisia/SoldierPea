@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: MakeUnit
   m_EditorClassIdentifier: 
   _priority: 0.5
-  AType: 0
+  AType: 1
+  startCountUnit: 5
+  armiesUnitDifference: 7
