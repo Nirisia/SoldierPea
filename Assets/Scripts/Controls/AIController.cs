@@ -45,28 +45,29 @@ public sealed class AIController : UnitController
 
 		//AIActionData data = InitSortData();
 		
-	    _tactician.SetTactic(InitExecData());
+	    _tactician.SetTactic(InitSortData());
 	}
 
-	/*private AIActionData InitSortData()
+	private List<AIActionData> InitSortData()
 	{
-		AIActionData toReturn = new AIActionData();
+		List<AIActionData> toReturn = new List<AIActionData>();
 
-		toReturn.package.Add("Army", _army);
-		toReturn.package.Add("EnemyArmy", _enemyArmy);
-		toReturn.package.Add("TargetBuildings", _targetBuildings);
-		toReturn.package.Add("OwnerBuildPoints", _TotalBuildPoints);
-
+		toReturn.Add(SetMakeUnitData());
+		toReturn.Add(Set_MakeSquad_Data());
+		toReturn.Add(SetMoveData());
+		toReturn.Add(SetFactoryData());
 
 		return toReturn;
-	}*/
+	}
 
     protected override void Update()
     {
 		//TODO: Update Priority (in SetTactic)
 
         base.Update();
-	    _tactician.ExecuteTactic(InitExecData());
+		AIActionData data = InitExecData();
+
+		_tactician.ExecuteTactic(data);
     }
 
 	#endregion

@@ -7,6 +7,11 @@ using UnityEngine;
 
 public class A_Move_Data: AIActionData
 {
+	public override EActionType GetActionType()
+	{
+		return EActionType.Move;
+	}
+
 	public Army myArmy;
 	public Army enemyArmy;
 	public TargetBuilding[] targetBuilding;
@@ -28,62 +33,6 @@ public class A_Move : AIAction
 	[SerializeField,Min(1)] private int minUnitInSquad = 3;
 
 
-	#endregion
-
-	#region Data
-	/*====== Data ======*/
-
-
-
-	/*private bool UnpackMoveData(out A_Move_Data moveData_, AIActionData abstractData_)
-	{
-		moveData_ = new A_Move_Data();
-
-		foreach (var pack in abstractData_.package)
-		{
-			switch (pack.Key)
-			{
-				case "Army":
-					moveData_.myArmy = (Army)pack.Value;
-					break;
-
-				case "EnemyArmy":
-					moveData_.enemyArmy = (Army)pack.Value;
-					break;
-
-				case "TargetBuildings":
-					moveData_.targetBuilding = (TargetBuilding[])pack.Value;
-					break;
-
-				case "OwnerBuildPoints":
-					moveData_.myBuildPoint = (int)pack.Value;
-					break;
-
-				default:
-					Debug.LogWarning("bad package");
-					return false;
-			}
-		}
-
-		if (moveData_.myArmy == null)
-		{
-			Debug.Log("A_Move: AIController Army not init");
-			return false;
-		}
-		else if (moveData_.enemyArmy == null)
-		{
-			Debug.Log("A_Move: Other Controller Army not init");
-			return false;
-		}
-		else if (moveData_.targetBuilding == null)
-		{
-			Debug.Log("A_Move: Target Buildings not init");
-			return false;
-		}
-
-		return true;
-	}
-*/
 	#endregion
 
 	#region Execution

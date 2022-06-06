@@ -6,7 +6,12 @@ using UnityEngine;
 
 public class A_Squad_Data : AIActionData
 {
-    public Squad squad = new Squad();
+	public override EActionType GetActionType()
+	{
+		return EActionType.MakeSquad;
+	}
+
+	public Squad squad = new Squad();
     public Army army = null;
     public List<int> TypeList = new List<int>();
     public List<int> CountsList = new List<int>();
@@ -20,7 +25,7 @@ public class A_MakeSquad : AIAction
     {
         if (data is A_Squad_Data package)
         {
-            foreach (var value in package.CountsList)
+            /*foreach (var value in package.CountsList)
                 package.TotalUnit += value;
 
             if (package.army.UnitList.Count < package.TotalUnit)
@@ -57,9 +62,7 @@ public class A_MakeSquad : AIAction
             {
                 Debug.Log("No unit add squad ");
                 return false;
-            }
-
-            package.army.AddSquad(package.squad);
+            }*/
             Squad test = new Squad();
             test.Add(package.army.UnitList[4]);
             package.army.AddSquad(test);
