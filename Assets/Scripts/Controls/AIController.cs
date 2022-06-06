@@ -46,6 +46,7 @@ public sealed class AIController : UnitController
 		//AIActionData data = InitSortData();
 		
 	    _tactician.SetTactic(InitSortData());
+		_selectedFactory = _army.FactoryList[0];
 	}
 
 	private List<AIActionData> InitSortData()
