@@ -23,6 +23,8 @@ public class A_Build : AIAction
 	/*===== Serialized Field =====*/
 
 	[SerializeField, Min(0)] private int typeFactory = 0;
+	[SerializeField] public float unitWeight = 0.5f;
+	[SerializeField] public float costWeight = 0.5f;
 
 	#endregion
 
@@ -125,6 +127,14 @@ public class A_Build : AIAction
 
     public override void UpdatePriority(AIActionData data)
     {
-        
+		if (data is A_Build_Data package)
+        {
+			Army _army = package.army;
+			Army _enemyArmy = package.enemyArmy;
+			int totalBuildPoints = package.buildPoints;
+			int cost = package.army.FactoryList[0].GetFactoryCost(typeFactory);
+
+			_priority = ((_army.Cost - _enemyArmy.Cost) / (_enemyArmy.Cost + _army.Cost) * unitWeight) * ((totalBuildPoints - cost) / (cost + totalBuildPoints) * costWeight);
+		}
     }
 }
