@@ -60,11 +60,20 @@ public sealed class AIController : UnitController
 		return toReturn;
 	}
 
-    protected override void Update()
+	int frame = 0;
+
+	protected override void Update()
     {
 		//TODO: Update Priority (in SetTactic)
 
-        base.Update();
+
+		if (frame < Time.frameCount - 10)
+		{
+			_tactician.SetTactic(InitSortData());
+			frame = Time.frameCount;
+		}
+
+		base.Update();
 		AIActionData data = InitExecData();
 
 		_tactician.ExecuteTactic(data);

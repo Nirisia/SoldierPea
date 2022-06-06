@@ -115,10 +115,10 @@ public class A_MakeUnit : AIAction
     {
 	    if (data is A_MakeUnit_Data package)
 		{
-			_priority = package.enemyArmy.Cost != 0
+			_priority = Mathf.Clamp01(package.army.Cost != 0
 				? Mathf.Min(((float) package.enemyArmy.Cost - (float) package.army.Cost) / (float) armiesUnitDifference,
 				package.buildPoints)
-				: 1.0f;
+				: 1.0f);
 		}
     }
 }
