@@ -17,6 +17,12 @@ MonoBehaviour:
   Cost: 2
   BuildDuration: 2
   MaxHP: 75
+  SquadAlignement: 0.1
+  SquadCohesion: 0.1
+  SquadSeparation: 1
+  SquadSeparationDist: 15
+  UnitViewAngle: 90
+  UnitRangeOfSight: 50
   DPS: 15
   AttackFrequency: 0.8
   AttackDistanceMax: 15
@@ -25,7 +31,7 @@ MonoBehaviour:
   RPS: 10
   RepairFrequency: 1
   RepairDistanceMax: 10
-  Speed: 10
+  Speed: 12
   AngularSpeed: 250
   Acceleration: 20
   IsFlying: 0

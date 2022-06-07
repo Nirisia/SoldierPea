@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 [System.Serializable]
@@ -86,6 +87,11 @@ public class Army : MonoBehaviour
 			costAllQueue += factory.BuildingQueueCost;
 		}
 		return costAllQueue;
+	}
+
+	public int TotalCost()
+	{
+		return CostPending() + _cost;
 	}
 	
 	/*====== Init Methods ======*/
