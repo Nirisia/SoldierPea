@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46e2985979a44b544aa44264d8963722, type: 3}
   m_Name: MakeSquad
   m_EditorClassIdentifier: 
-  _priority: 0.3
+  _priority: 0
   AType: 2
   squadValueWeight: 0.3
   costWeight: 0.3
   distWeight: 0.3
-  Radius: 1
+  Radius: 100
   Seuil: 0.7
