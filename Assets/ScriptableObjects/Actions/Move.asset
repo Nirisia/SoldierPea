@@ -12,11 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7297818c38d60346ae177b48580cbb0, type: 3}
   m_Name: Move
   m_EditorClassIdentifier: 
-  _priority: 0.3818353
+  _priority: 0.7452525
   AType: 4
-  squadAttackWeight: 0.528
-  attackFactoryWeight: 0.428
-  captureBuildingWeight: 0.711
+  squadAttackWeight: 0.2
+  attackFactoryWeight: 0.3
+  captureBuildingWeight: 0.6
   movementRange: 1000
-  captureUnWantedBuildPoint: 10
-  minUnitInSquad: 3
+  captureUnWantedBuildPoint: 30

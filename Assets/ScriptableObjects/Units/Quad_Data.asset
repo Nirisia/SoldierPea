@@ -17,6 +17,12 @@ MonoBehaviour:
   Cost: 3
   BuildDuration: 3
   MaxHP: 100
+  SquadAlignement: 0.5
+  SquadCohesion: 0.1
+  SquadSeparation: 0.9
+  SquadSeparationDist: 5
+  UnitViewAngle: 45
+  UnitRangeOfSight: 160
   DPS: 20
   AttackFrequency: 1
   AttackDistanceMax: 15
