@@ -25,6 +25,7 @@ public abstract class BaseEntity : MonoBehaviour, ISelectable, IDamageable, IRep
         Team = _team;
 
         IsInitialized = true;
+        NeedHeal = false;
     }
     public Color GetColor()
     {

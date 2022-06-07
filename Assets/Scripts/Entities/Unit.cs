@@ -205,8 +205,8 @@ public class Unit : BaseEntity
 
         foreach (var targetCollider in targetColliders)
         {
-            BaseEntity ally = targetCollider.GetComponent<Unit>();
-            if (ally != null && ally.GetTeam() == this.GetTeam())
+            Unit ally = targetCollider.GetComponent<Unit>();
+            if (ally != null && ally.GetTeam() == this.GetTeam() && ally.HP < ally.UnitData.MaxHP)
             {
                 EntityTarget = ally;
                 Debug.Log(EntityTarget + "see by" + this);
@@ -361,6 +361,7 @@ public class Unit : BaseEntity
                 else
                 {
                     ally.HP = ally.UnitData.MaxHP;
+                    ally.NeedHeal = false;
                 }
             }
         }
