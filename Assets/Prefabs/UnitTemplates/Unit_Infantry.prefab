@@ -55,6 +55,8 @@ MonoBehaviour:
   UnitData: {fileID: 11400000, guid: 4f2d24809fd51e4469fbbdee459ac35d, type: 2}
   EntityTarget: {fileID: 0}
   CaptureTarget: {fileID: 0}
+  NavMeshAgent: {fileID: 0}
+  isCapturing: 0
 --- !u!136 &1707494665243283659
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -497,6 +499,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: d7f0c86ff6be81e4d8e82f13e6fa7691, type: 2}
+    - target: {fileID: 3300352, guid: 7771b823973e1d348a8f17659b61b05a, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
     m_RemovedComponents:
     - {fileID: 0}
     - {fileID: 0}
