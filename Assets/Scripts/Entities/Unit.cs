@@ -189,7 +189,6 @@ public class Unit : BaseEntity
             if (enemy != null && enemy.GetTeam() != this.GetTeam())
             {
                 EntityTarget = enemy;
-                Debug.Log(EntityTarget + "see by" + this);
                 return true;
             }
         }
@@ -209,7 +208,6 @@ public class Unit : BaseEntity
             if (ally != null && ally.GetTeam() == this.GetTeam() && ally.HP < ally.UnitData.MaxHP)
             {
                 EntityTarget = ally;
-                Debug.Log(EntityTarget + "see by" + this);
                 return true;
             }
         }
