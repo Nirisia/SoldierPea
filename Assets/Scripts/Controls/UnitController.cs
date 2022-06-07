@@ -32,6 +32,10 @@ public class UnitController : MonoBehaviour
 	[SerializeField]
 	protected int StartingBuildPoints = 15;
 
+	/* how much seconds it takes for build points to increase by one */
+	[SerializeField]
+	private float IncreasBuildPointsRate = 5.0f;
+
 	protected int _TotalBuildPoints = 0;
 	public int TotalBuildPoints
 	{
@@ -43,6 +47,9 @@ public class UnitController : MonoBehaviour
 			OnBuildPointsUpdated?.Invoke();
 		}
 	}
+
+	/* last time build point were increased */
+	private float _LastIncrease = 0.0f;
 
 	protected int _CapturedTargets = 0;
 	public int CapturedTargets
@@ -195,6 +202,11 @@ public class UnitController : MonoBehaviour
 	}
 	virtual protected void Update ()
 	{
+		if (_LastIncrease < Time.time - IncreasBuildPointsRate)
+		{
+			_LastIncrease = Time.time;
+			TotalBuildPoints++;
+		}
 	}
 	#endregion
 }

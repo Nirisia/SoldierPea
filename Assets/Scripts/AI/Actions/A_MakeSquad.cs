@@ -78,9 +78,6 @@ public class A_MakeSquad : AIAction
 				package.army.AddSquad(squad);
 			}
 
-            Debug.Log("army:" + package.army.SquadList.Count);
-			Debug.Log("army:" + package.army.SquadList[0].Count);
-
 			return true;
         }
 

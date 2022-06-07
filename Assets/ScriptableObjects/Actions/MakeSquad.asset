@@ -17,5 +17,5 @@ MonoBehaviour:
   squadValueWeight: 0.3
   costWeight: 0.3
   distWeight: 0.3
-  Radius: 10000
+  Radius: 1000
   Seuil: 0.7

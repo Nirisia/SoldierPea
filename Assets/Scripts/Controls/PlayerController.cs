@@ -216,6 +216,8 @@ public sealed class PlayerController : UnitController
 
 	override protected void Update()
 	{
+		base.Update();
+
 		/* gameplay Update (selection/position/action...) */
 		switch (CurrentInputMode)
 		{
