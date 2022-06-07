@@ -55,6 +55,7 @@ MonoBehaviour:
   UnitData: {fileID: 11400000, guid: b4a2cf66d48b98043b5a7e8bfb7b27a4, type: 2}
   EntityTarget: {fileID: 0}
   CaptureTarget: {fileID: 0}
+  NavMeshAgent: {fileID: 0}
   isCapturing: 0
 --- !u!65 &3563715967324713862
 BoxCollider:
@@ -95,7 +96,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.6
-  m_Speed: 10
+  m_Speed: 12
   m_Acceleration: 20
   avoidancePriority: 50
   m_AngularSpeed: 250
