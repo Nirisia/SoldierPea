@@ -179,7 +179,7 @@ public class Squad
 
 		/* tests if still moves */
 		_moves		= false;
-		_currentPos	= Vector3.zero;
+		Vector3 currentPos	= Vector3.zero;
 		int count	= 0;
 
 		for (int i = 0; i < _group.Count; i++)//ParallelLoopResult result = Parallel.For(1, _group.Count, (i) => 
@@ -211,12 +211,15 @@ public class Squad
 
 			}
 
-			_currentPos += currentUnit.transform.position;
+			currentPos += currentUnit.transform.position;
 
 			desiredVelocities[i] = ComputeUnitMovement(currentUnit, neighbours[i]);
 		}//);
 
-		_currentPos /= count;
+		if (count > 0)
+		{
+			_currentPos = currentPos / count;
+		}
 		
 
 		if (Vector3.Distance(_currentPos, _desiredPosition) <= _radius || !_moves)
