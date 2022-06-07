@@ -34,6 +34,7 @@ public class CaptureTask : Node
         else if (unit.CaptureTarget.GetTeam() == unit.GetTeam())
         {
             unit.isCapturing = false;
+			unit.StopCapture();
             state = NodeState.SUCCESS;
             return state;
         }

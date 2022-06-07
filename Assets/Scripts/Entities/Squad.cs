@@ -48,6 +48,43 @@ public class Squad
 		return cost;
 	}
 
+	public bool Capturing()
+	{
+		bool temp = true;
+
+		foreach(Unit unit in _group)
+		{
+			temp &= unit.CaptureTarget != null;
+		}
+
+		return temp;
+	}
+
+	public bool Attacking()
+	{
+		bool temp = true;
+
+		foreach (Unit unit in _group)
+		{
+			temp &= unit.EntityTarget != null && unit.EntityTarget.GetTeam() != unit.GetTeam();
+		}
+
+		return temp;
+	}
+
+	public void StopMove()
+	{
+		foreach (Unit unit in _group)
+		{
+			bool isAttacking = unit.EntityTarget != null && unit.EntityTarget.GetTeam() != unit.GetTeam();
+
+			if (isAttacking)
+				unit.NavMeshAgent.isStopped = true;
+			else if (unit.CaptureTarget != null)
+				unit.NavMeshAgent.isStopped = false;
+		}
+	}
+
 	/*====== Add/Remove =====*/
 
 	public void Add(Unit newUnit_)

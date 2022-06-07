@@ -30,7 +30,6 @@ public class A_Move : AIAction
 
 	[SerializeField] private float movementRange = 100.0f;
 	[SerializeField,Min(0)] private int captureUnWantedBuildPoint = 10;
-	[SerializeField,Min(1)] private int minUnitInSquad = 3;
 
 
 	#endregion
@@ -47,18 +46,26 @@ public class A_Move : AIAction
 
 		    for (int i = 0; i < moveData.myArmy.SquadList.Count; i++)
 		    {
-				
+				if (moveData.myArmy.SquadList[i].Capturing())
+					continue;
 
-			    Vector3 vecTemp = Vector3.zero;
+				if (moveData.myArmy.SquadList[i].Moving)
+					moveData.myArmy.SquadList[i].StopMove();
+
+				moveData.myArmy.SquadList[i].UpdatePosition();
+
+				Vector3 vecTemp = Vector3.zero;
 			    SelectPos(ref priority, GetCapturePos(moveData, moveData.myArmy.SquadList[i], out vecTemp), ref pos,
 				    vecTemp);
-			    SelectPos(ref priority, GetAttackFactory(moveData, moveData.myArmy.SquadList[i], out vecTemp), ref pos,
+				SelectPos(ref priority, GetAttackFactory(moveData, moveData.myArmy.SquadList[i], out vecTemp), ref pos,
 				    vecTemp);
-			    SelectPos(ref priority, GetAttackSquad(moveData, moveData.myArmy.SquadList[i], out vecTemp), ref pos,
+				SelectPos(ref priority, GetAttackSquad(moveData, moveData.myArmy.SquadList[i], out vecTemp), ref pos,
 				    vecTemp);
 
-				if (moveData.myArmy.SquadList[i].Moving && Vector3.Distance(pos,moveData.myArmy.SquadList[i].DesiredPos) < movementRange)
-					return true;
+				if (moveData.myArmy.SquadList[i].Moving && Vector3.Distance(pos, moveData.myArmy.SquadList[i].DesiredPos) < Vector3.kEpsilon)
+					continue;
+				else if (pos == Vector3.zero)
+					continue;
 
 				moveData.myArmy.SquadList[i].Move(pos);
 		    }
@@ -91,11 +98,11 @@ public class A_Move : AIAction
 		for (int captureTarget = 0; captureTarget < priority_Data_.targetBuilding.Length; captureTarget++)
 		{
 			TargetBuilding targetBuilding = priority_Data_.targetBuilding[captureTarget];
-			if(targetBuilding.GetTeam() == priority_Data_.myArmy.Team)
+			if(targetBuilding.GetTeam() != ETeam.Neutral)
 				continue;
 			float dist = 1.0f - Mathf.Clamp01((targetBuilding.transform.position - squad.Position).sqrMagnitude / (movementRange * movementRange));
 
-			float temp = Mathf.Clamp01(priority_Data_.myBuildPoint/captureUnWantedBuildPoint) * dist;
+			float temp = Mathf.Clamp01(1.0f - (float)priority_Data_.myBuildPoint/captureUnWantedBuildPoint) * dist;
 
 			if (temp > captureRatio)
 			{
@@ -119,8 +126,8 @@ public class A_Move : AIAction
 
 			float dist = 1.0f - Mathf.Clamp01((eFactory.transform.position - squad.Position).sqrMagnitude / (movementRange * movementRange));
 
-			int ownerStrength = priority_Data_.myBuildPoint + priority_Data_.myArmy.TotalCost();
-			int enemyStrength = priority_Data_.enemyArmy._owner.TotalBuildPoints + priority_Data_.enemyArmy.TotalCost();
+			float ownerStrength = priority_Data_.myBuildPoint + priority_Data_.myArmy.TotalCost();
+			float enemyStrength = priority_Data_.enemyArmy._owner.TotalBuildPoints + priority_Data_.enemyArmy.TotalCost();
 
 			float temp= Mathf.Clamp01(ownerStrength - enemyStrength / (ownerStrength + enemyStrength)) * dist;
 
@@ -183,19 +190,19 @@ public class A_Move : AIAction
 		{
 			Squad ownerSquad = priority_Data_.myArmy.SquadList[mySquad];
 
-			if (ownerSquad.Count < minUnitInSquad)
+			if (ownerSquad.Count <= 0)
 				continue;
 
 			for (int captureTarget = 0; captureTarget < priority_Data_.targetBuilding.Length; captureTarget++)
 			{
 				TargetBuilding targetBuilding = priority_Data_.targetBuilding[captureTarget];
 				
-				if(targetBuilding.GetTeam() == priority_Data_.myArmy.Team)
+				if(targetBuilding.GetTeam() != ETeam.Neutral)
 					continue;
 				
 				float dist = 1.0f - Mathf.Clamp01((targetBuilding.transform.position - ownerSquad.Position).sqrMagnitude / (movementRange * movementRange));
 
-				captureRatio += Mathf.Clamp01((priority_Data_.myBuildPoint/captureUnWantedBuildPoint)) * dist;
+				captureRatio += Mathf.Clamp01(1.0f - (float)priority_Data_.myBuildPoint/captureUnWantedBuildPoint) * dist;
 			}
 		}
 
@@ -210,7 +217,7 @@ public class A_Move : AIAction
 		{
 			Squad ownerSquad = priority_Data_.myArmy.SquadList[mySquad];
 
-			if (ownerSquad.Count < minUnitInSquad)
+			if (ownerSquad.Count <= 0)
 				continue;
 
 			for (int enemyFactory = 0; enemyFactory < priority_Data_.enemyArmy.FactoryList.Count; enemyFactory++)
@@ -219,8 +226,8 @@ public class A_Move : AIAction
 
 				float dist = 1.0f - Mathf.Clamp01((eFactory.transform.position - ownerSquad.Position).sqrMagnitude / (movementRange * movementRange));
 
-				int ownerStrength = priority_Data_.myBuildPoint + priority_Data_.myArmy.TotalCost();
-				int enemyStrength = priority_Data_.enemyArmy._owner.TotalBuildPoints + priority_Data_.enemyArmy.TotalCost();
+				float ownerStrength = priority_Data_.myBuildPoint + priority_Data_.myArmy.TotalCost();
+				float enemyStrength = priority_Data_.enemyArmy._owner.TotalBuildPoints + priority_Data_.enemyArmy.TotalCost();
 
 				attackRatio += Mathf.Clamp01(ownerStrength - enemyStrength / (ownerStrength + enemyStrength)) * dist;
 			}
@@ -237,7 +244,7 @@ public class A_Move : AIAction
 		{
 			Squad ownerSquad = priority_Data_.myArmy.SquadList[mySquad];
 
-			if (ownerSquad.Count < minUnitInSquad)
+			if (ownerSquad.Count <= 0)
 				continue;
 
 			for (int enemySquad = 0; enemySquad < priority_Data_.enemyArmy.SquadList.Count; enemySquad++)

@@ -44,7 +44,6 @@ public class A_MakeSquad : AIAction
 
 			List<Unit> availableUnit		= new List<Unit>(package.army.UnitList);
 
-
 			for (int i = 0; i < availableUnit.Count; i++)
 			{
 				/* create unit info */
@@ -65,13 +64,14 @@ public class A_MakeSquad : AIAction
 				{
 					Unit jUnit = availableUnit[j];
 
-					if ((jUnit.transform.position - newColonel.transform.position).sqrMagnitude < Radius * Radius)
+					if ((jUnit.transform.position - newColonel.transform.position).sqrMagnitude < (Radius * Radius))
 					{
 						squad.Add(jUnit);
 						availableUnit.RemoveAt(j);
 
 						/* when removing, start all over*/
 						i = -1;
+						j = -1;
 					}
 				}
 

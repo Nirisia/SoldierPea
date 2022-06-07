@@ -36,7 +36,7 @@ public class A_Build : AIAction
         {
 			/* init useful data */
 	        Factory factory = package.army.FactoryList[0];
-	        Vector3 armyPos = package.army.transform.position;
+	        Vector3 armyPos = package.enemyArmy.transform.position;
 
 			/* not create factory when building unit */
 	        if (factory.IsBuildingUnit)
@@ -88,13 +88,14 @@ public class A_Build : AIAction
     {
 		if (data is A_Build_Data package)
         {
-			Army _army = package.army;
-			Army _enemyArmy = package.enemyArmy;
-			int totalBuildPoints = package.buildPoints;
-			int cost = package.army.FactoryList[0].GetFactoryCost(typeFactory);
-			int totalCost = (_enemyArmy.Cost + _army.Cost);
+			Army _army				= package.army;
+			Army _enemyArmy			= package.enemyArmy;
 
-			_priority =	Mathf.Clamp01(totalCost > 0 ? ((_army.Cost - _enemyArmy.Cost) /  totalCost * unitWeight) : 0.0f 
+			float totalBuildPoints	= package.buildPoints;
+			float cost				= package.army.FactoryList[0].GetFactoryCost(typeFactory);
+			float totalCost			= (_enemyArmy.Cost + _army.Cost);
+
+			_priority =	Mathf.Clamp01(totalCost > 0 ? (((float)_army.Cost - _enemyArmy.Cost) /  totalCost * unitWeight) : 0.0f 
 						+ ((totalBuildPoints - cost) / (cost + totalBuildPoints) * costWeight));
 		}
     }

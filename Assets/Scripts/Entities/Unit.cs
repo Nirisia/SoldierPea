@@ -245,6 +245,7 @@ public class Unit : BaseEntity
     public void StartAttacking(BaseEntity target)
     {
         EntityTarget = target;
+		target.OnDeadEvent += () => { EntityTarget = null; };
     }
     public void ComputeAttack()
     {
