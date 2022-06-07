@@ -25,6 +25,8 @@ public sealed class Factory : BaseEntity
     [SerializeField]
     int MaxBuildingQueueSize = 5;
     Queue<int> BuildingQueue = new Queue<int>();
+
+    public int UnitInQueue => BuildingQueue.Count;
     public enum State
     {
         Available = 0,
