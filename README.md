@@ -40,5 +40,11 @@ ZQSD or wheel Click - To move the camera
 
 ## Additional Notes
 
+- there is still some bug in the planning AI, such as squads stopping.
+- some things, such as Make Unit Task, are hardcoded due to the static number of units that we have and the lack of time to do something more modular.
+
 Link : 
 - https://medium.com/geekculture/how-to-create-a-simple-behaviour-tree-in-unity-c-3964c84c060e
+- https://www.researchgate.net/publication/224491324_Intelligent_Moving_of_Groups_in_Real-Time_Strategy_Games
+- https://sandruski.github.io/RTS-Group-Movement/
+- https://medium.com/fragmentblog/simulating-flocking-with-the-boids-algorithm-92aef51b9e00
