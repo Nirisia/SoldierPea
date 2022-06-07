@@ -343,15 +343,28 @@ public class Unit : BaseEntity
         eulerRotation.x = 0f;
         eulerRotation.z = 0f;
         transform.eulerAngles = eulerRotation;
+        Unit ally = EntityTarget.GetComponent<Unit>();
 
-        if ((Time.time - LastActionDate) > UnitData.RepairFrequency)
+        if (ally.HP < ally.UnitData.MaxHP)
         {
-            LastActionDate = Time.time;
+            if ((Time.time - LastActionDate) > UnitData.RepairFrequency)
+            {
+                LastActionDate = Time.time;
 
-            // apply reparing
-            int amount = Mathf.FloorToInt(UnitData.RPS * UnitData.RepairFrequency);
-            EntityTarget.Repair(amount);
+                // apply reparing
+                int amount = Mathf.FloorToInt(UnitData.RPS * UnitData.RepairFrequency);
+
+                if ((ally.HP += amount) <= ally.UnitData.MaxHP)
+                {
+                    EntityTarget.Repair(amount);
+                }
+                else
+                {
+                    ally.HP = ally.UnitData.MaxHP;
+                }
+            }
         }
+        
     }
     #endregion
 }
