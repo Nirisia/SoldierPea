@@ -28,6 +28,17 @@ We used a template provided by us that included:
  - basic gameflow
  - basic UI
 
-## 
+## How to run
+We have no build so you can play on the viewport of Unity.
 
-https://medium.com/geekculture/how-to-create-a-simple-behaviour-tree-in-unity-c-3964c84c060e
+## How to play
+
+Left Click - On your base (blue building) to create units 
+A - To select all your units
+Right Click - On the map to move your selected units
+ZQSD or wheel Click - To move the camera
+
+## Additional Notes
+
+Link : 
+- https://medium.com/geekculture/how-to-create-a-simple-behaviour-tree-in-unity-c-3964c84c060e

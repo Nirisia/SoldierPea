@@ -88,5 +88,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BuildProgressImage
       objectReference: {fileID: 0}
+    - target: {fileID: 3454967550925175198, guid: c4c916682eac65748a271387fc795cd5,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4300000, guid: 03a565dd04a73db4b95bf0329e822ff9, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4c916682eac65748a271387fc795cd5, type: 3}

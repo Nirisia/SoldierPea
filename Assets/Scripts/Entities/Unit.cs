@@ -204,8 +204,8 @@ public class Unit : BaseEntity
 
         foreach (var targetCollider in targetColliders)
         {
-            BaseEntity ally = targetCollider.GetComponent<Unit>();
-            if (ally != null && ally.GetTeam() == this.GetTeam())
+            Unit ally = targetCollider.GetComponent<Unit>();
+            if (ally != null && ally.GetTeam() == this.GetTeam() && ally.HP < ally.UnitData.MaxHP)
             {
                 EntityTarget = ally;
                 return true;
@@ -342,15 +342,29 @@ public class Unit : BaseEntity
         eulerRotation.x = 0f;
         eulerRotation.z = 0f;
         transform.eulerAngles = eulerRotation;
+        Unit ally = EntityTarget.GetComponent<Unit>();
 
-        if ((Time.time - LastActionDate) > UnitData.RepairFrequency)
+        if (ally.HP < ally.UnitData.MaxHP)
         {
-            LastActionDate = Time.time;
+            if ((Time.time - LastActionDate) > UnitData.RepairFrequency)
+            {
+                LastActionDate = Time.time;
 
-            // apply reparing
-            int amount = Mathf.FloorToInt(UnitData.RPS * UnitData.RepairFrequency);
-            EntityTarget.Repair(amount);
+                // apply reparing
+                int amount = Mathf.FloorToInt(UnitData.RPS * UnitData.RepairFrequency);
+
+                if ((ally.HP += amount) <= ally.UnitData.MaxHP)
+                {
+                    EntityTarget.Repair(amount);
+                }
+                else
+                {
+                    ally.HP = ally.UnitData.MaxHP;
+                    ally.NeedHeal = false;
+                }
+            }
         }
+        
     }
     #endregion
 }
