@@ -219,7 +219,7 @@ public class Squad
 		Vector3 currentPos	= Vector3.zero;
 		int count	= 0;
 
-		for (int i = 0; i < _group.Count; i++)//ParallelLoopResult result = Parallel.For(1, _group.Count, (i) => 
+		for (int i = 0; i < _group.Count; i++)
 		{
 			Unit currentUnit = _group[i];
 			bool stop = currentUnit.NavMeshAgent.isStopped;
@@ -251,7 +251,7 @@ public class Squad
 			currentPos += currentUnit.transform.position;
 
 			desiredVelocities[i] = ComputeUnitMovement(currentUnit, neighbours[i]);
-		}//);
+		}
 
 		if (count > 0)
 		{

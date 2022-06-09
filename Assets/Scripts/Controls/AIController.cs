@@ -4,10 +4,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
-
-// $$$ TO DO :)
-
-
 public sealed class AIController : UnitController
 {
 	#region Members 
@@ -42,8 +38,6 @@ public sealed class AIController : UnitController
 			}
 
 		_targetBuildings = GameServices.GetTargetBuildings();
-
-		//AIActionData data = InitSortData();
 		
 	    _tactician.SetTactic(InitSortData());
 		_selectedFactory = _army.FactoryList[0];
@@ -92,9 +86,6 @@ public sealed class AIController : UnitController
             Debug.Log("action is null");
             return null;
         }
-
-        //TODO: Compute value for tactics and replace hard coded
-		//Do it in actions => give min data for compute.
         switch (_tactician.GetNextAction().AType)
         {
             case EActionType.MakeUnit:

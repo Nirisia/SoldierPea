@@ -225,7 +225,6 @@ public sealed class Factory : BaseEntity
         }
 
         CurrentBuildDuration = GetBuildableUnitData(unitMenuIndex).BuildDuration;
-        //Debug.Log("currentBuildDuration " + CurrentBuildDuration);
 
         CurrentState = State.BuildingUnit;
         EndBuildDate = Time.time + CurrentBuildDuration;
@@ -355,11 +354,8 @@ public sealed class Factory : BaseEntity
         buildPos += Vector3.up * (extent.y + overlapYOffset);
 
         if (Physics.CheckBox(buildPos, extent))
-        //foreach(Collider col in Physics.OverlapBox(buildPos, halfExtent))
-        {
-            //Debug.Log("Overlap");
             return false;
-        }
+        
 
         return true;
     }

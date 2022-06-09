@@ -95,7 +95,7 @@ public class MenuController : MonoBehaviour
             });
 
             Text[] buttonTextArray = BuildUnitButtons[i].GetComponentsInChildren<Text>();
-            Text buttonText = buttonTextArray[0];//BuildUnitButtons[i].GetComponentInChildren<Text>();
+            Text buttonText = buttonTextArray[0];
             UnitDataScriptable data = selectedFactory.GetBuildableUnitData(i);
             buttonText.text = data.Caption + "(" + data.Cost + ")";
 

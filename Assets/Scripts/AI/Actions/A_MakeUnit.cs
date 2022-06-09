@@ -39,7 +39,6 @@ public class A_MakeUnit : AIAction
 		Factory heavyFactory = null;
 		bool hasHeavy = false;
 		
-		//UnpackMakeUnitData(out makeUnitData, data);
 		if (data is A_MakeUnit_Data package)
 		{
 

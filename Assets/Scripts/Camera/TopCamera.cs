@@ -67,8 +67,6 @@ public class TopCamera : MonoBehaviour
     {
         Move.z += value * MoveSpeed * ComputeZoomSpeedModifier() * Time.deltaTime;
     }
-
-    // Direct focus on one entity (no smooth)
     public void FocusEntity(BaseEntity entity)
     {
         if (entity == null)

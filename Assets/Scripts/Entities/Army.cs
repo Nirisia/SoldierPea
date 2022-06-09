@@ -98,7 +98,6 @@ public class Army : MonoBehaviour
 
 	void GetTeamExistingFactory()
 	{
-		// get all team factory already in scene
 		Factory[] allFactories = FindObjectsOfType<Factory>();
 		foreach (Factory factory in allFactories)
 		{
@@ -117,11 +116,6 @@ public class Army : MonoBehaviour
 		GetTeamExistingFactory();
 	}
 
-	// Update is called once per frame
-	void Update()
-	{
-		
-	}
 
 	private void FixedUpdate()
 	{

@@ -174,7 +174,6 @@ public class A_Move : AIAction
 	{
 		if (data_ is A_Move_Data moveData)
 		{
-			//UnpackMoveData(out moveData, data_);
 			_priority = Mathf.Clamp01(GetAttackFactoryRatio(moveData) * attackFactoryWeight
 			                          + GetAttackSquadRatio(moveData) * squadAttackWeight
 			                          + GetCaptureFactoryRatio(moveData) * captureBuildingWeight);
